@@ -1,0 +1,34 @@
+{
+  "mission_id": "M003",
+  "question_id": "Q003",
+  "title": "Grow a greener Mars",
+  "subject": "Biology",
+  "context": "Dr. Noor is preparing the greenhouse. Healthy plants will help supply food and oxygen to the colony.",
+  "question": "Which inputs do plants use for photosynthesis?",
+  "options": [
+    {
+      "id": "A",
+      "text": "Oxygen, sugar, and darkness"
+    },
+    {
+      "id": "B",
+      "text": "Only water and soil"
+    },
+    {
+      "id": "C",
+      "text": "Oxygen and sunlight"
+    },
+    {
+      "id": "D",
+      "text": "Carbon dioxide, water, and light"
+    }
+  ],
+  "answer": "D",
+  "explanation": "Correct! Photosynthesis uses light energy to turn carbon dioxide and water into sugars, releasing oxygen. Roots also need mineral nutrients for healthy growth.",
+  "lesson": "Plants capture light with chlorophyll. During photosynthesis they use carbon dioxide and water to make sugars and release oxygen. Soil provides support and minerals but is not itself an input to the photosynthesis reaction.",
+  "hints": [
+    "Think about what enters leaves from the air and what roots absorb.",
+    "Carbon dioxide enters through leaves. Water arrives from roots. What provides energy?",
+    "Plants need a source of light as well as carbon dioxide and water."
+  ]
+}

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#101719" />
+    <title>Mars Colony Explorer</title>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <a class="brand" href="/"
+          >◈ <span>MARS COLONY<small>EXPLORER PROGRAM / 2048</small></span></a
+        >
+        <div class="header-right">
+          <span id="mode-badge">● OFFLINE EXPEDITION</span
+          ><button id="settings-button" class="quiet">Settings</button>
+        </div>
+      </header>
+      <main>
+        <section class="intro">
+          <div>
+            <p class="eyebrow">EXPEDITION 01 / ARCADIA PLANITIA</p>
+            <h1>A new world. <em>A curious mind.</em></h1>
+            <p>
+              Explore the colony. Solve real science. Build a future on Mars.
+            </p>
+          </div>
+          <div class="sol">
+            SOL <strong>024</strong><small>COLONY LOCAL TIME</small>
+          </div>
+        </section>
+        <div class="workspace">
+          <section class="world-panel">
+            <div class="panel-heading">
+              <span><i></i> SURFACE EXPLORATION</span
+              ><span>SECTOR 04 · 18.6° N</span>
+            </div>
+            <div id="game" aria-label="Mars exploration game"></div>
+            <div class="controls">
+              <span><kbd>W A S D</kbd> or <kbd>↑ ← ↓ →</kbd> Move</span
+              ><span
+                ><kbd>E</kbd> Interact
+                <span class="muted">/ click a crewmate to walk over</span></span
+              >
+            </div>
+          </section>
+          <aside id="progress"></aside>
+        </div>
+        <footer>
+          <span>◈ KNOWLEDGE IS YOUR MOST VALUABLE RESOURCE.</span
+          ><span
+            >EARTH ↔ MARS <span class="signal">▂▄▆</span> LINK ESTABLISHED</span
+          >
+        </footer>
+      </main>
+    </div>
+    <dialog id="overlay" aria-labelledby="modal-title"></dialog>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

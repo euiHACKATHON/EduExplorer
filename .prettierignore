@@ -1,0 +1,5 @@
+node_modules
+dist
+.venv
+.npm-cache
+output_PhaserJS_Educational_Game_Implementation_Plan.md

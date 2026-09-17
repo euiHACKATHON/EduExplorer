@@ -1,0 +1,18 @@
+{
+  "npc_id": "scientist_01",
+  "npc_name": "Dr. Sara",
+  "message": "Welcome, explorer! Rover Beta is stuck in Sector 4. Let’s use Newton’s second law to calculate the net force it needs.",
+  "source": "offline",
+  "options": [
+    {
+      "text": "Let’s solve the mission →",
+      "action": "START_CHALLENGE",
+      "payload": "M001"
+    },
+    {
+      "text": "Explain the science first",
+      "action": "EXPLAIN",
+      "payload": "M001"
+    }
+  ]
+}

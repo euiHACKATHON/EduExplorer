@@ -1,0 +1,18 @@
+{
+  "npc_id": "botanist_01",
+  "npc_name": "Dr. Noor",
+  "message": "A greener Mars begins here. Help me make sure our greenhouse plants have what they need for photosynthesis.",
+  "source": "offline",
+  "options": [
+    {
+      "text": "Let’s solve the mission →",
+      "action": "START_CHALLENGE",
+      "payload": "M003"
+    },
+    {
+      "text": "Explain the science first",
+      "action": "EXPLAIN",
+      "payload": "M003"
+    }
+  ]
+}

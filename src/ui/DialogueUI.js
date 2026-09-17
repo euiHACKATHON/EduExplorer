@@ -1,0 +1,109 @@
+import { api } from "../api/APIService.js";
+import { openChallenge } from "./ChallengeUI.js";
+export const modal = document.querySelector("#overlay");
+let opener;
+let revision = 0;
+modal.addEventListener("close", () => {
+  revision++;
+  opener?.focus?.();
+});
+export const modalRevision = () => revision;
+export const isCurrentModal = (token) => modal.open && token === revision;
+export function closeModal() {
+  modal.close();
+}
+export function showModal(title, eyebrow = "COLONY COMMS") {
+  revision++;
+  if (!modal.open) opener = document.activeElement;
+  modal.replaceChildren();
+  const top = document.createElement("div");
+  top.className = "modal-top";
+  const label = paragraph(eyebrow, "eyebrow");
+  const close = button("×", closeModal, "close");
+  close.setAttribute("aria-label", "Close dialog");
+  top.append(label, close);
+  const h = document.createElement("h2");
+  h.id = "modal-title";
+  h.textContent = title;
+  modal.append(top, h);
+  if (!modal.open) modal.showModal();
+  return modal;
+}
+export function paragraph(text, className = "") {
+  const p = document.createElement("p");
+  p.className = className;
+  p.textContent = text;
+  return p;
+}
+export function button(text, action, className = "primary") {
+  const b = document.createElement("button");
+  b.className = className;
+  b.textContent = text;
+  b.onclick = action;
+  return b;
+}
+export async function pending(b, fn) {
+  b.disabled = true;
+  try {
+    await fn();
+  } catch (e) {
+    if (b.isConnected && modal.open) {
+      const p = paragraph(e.message, "error");
+      p.setAttribute("role", "alert");
+      modal.append(p);
+    }
+  } finally {
+    b.disabled = false;
+  }
+}
+export async function dialogue(npc) {
+  showModal(npc.name, npc.role.toUpperCase());
+  const token = modalRevision();
+  const loading = paragraph("Connecting to your crewmate…");
+  modal.append(loading);
+  try {
+    const data = await api.getNPCDialogue(npc.id);
+    if (!isCurrentModal(token)) return;
+    loading.textContent = data.message;
+    modal.append(
+      paragraph(
+        data.source === "ai"
+          ? "✦ AI-generated dialogue"
+          : data.source === "authored-fallback"
+            ? "◇ AI unavailable · authored backup dialogue"
+            : "◇ Authored expedition dialogue",
+        "source",
+      ),
+    );
+    for (const option of data.options) {
+      const b = button(
+        option.text,
+        () =>
+          pending(b, async () => {
+            if (option.action === "START_CHALLENGE")
+              await openChallenge(option.payload);
+            else {
+              const info = await api.explain(npc.mission);
+              if (!isCurrentModal(token)) return;
+              modal.append(
+                paragraph(info.message, "hint"),
+                paragraph(
+                  info.source === "ai"
+                    ? "✦ AI-generated explanation"
+                    : "◇ Authored explanation",
+                  "source",
+                ),
+              );
+            }
+          }),
+        option.action === "START_CHALLENGE" ? "primary" : "secondary",
+      );
+      modal.append(b);
+    }
+  } catch (e) {
+    if (isCurrentModal(token)) {
+      loading.textContent = e.message;
+      loading.className = "error";
+    }
+  }
+}

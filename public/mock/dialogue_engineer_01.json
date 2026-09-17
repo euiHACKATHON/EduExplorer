@@ -1,0 +1,18 @@
+{
+  "npc_id": "engineer_01",
+  "npc_name": "Engineer Kai",
+  "message": "Good timing! We need enough stored solar energy for the night. Help me check the array’s energy output.",
+  "source": "offline",
+  "options": [
+    {
+      "text": "Let’s solve the mission →",
+      "action": "START_CHALLENGE",
+      "payload": "M002"
+    },
+    {
+      "text": "Explain the science first",
+      "action": "EXPLAIN",
+      "payload": "M002"
+    }
+  ]
+}

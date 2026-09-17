@@ -1,0 +1,34 @@
+{
+  "mission_id": "M001",
+  "question_id": "Q001",
+  "title": "Unstick the rover",
+  "subject": "Physics",
+  "context": "Rover Beta is stuck in Sector 4. Help Dr. Sara calculate the net force needed to get it moving.",
+  "question": "A 500 kg rover needs an acceleration of 4 m/s². What net force is required?",
+  "options": [
+    {
+      "id": "A",
+      "text": "125 N"
+    },
+    {
+      "id": "B",
+      "text": "504 N"
+    },
+    {
+      "id": "C",
+      "text": "2,000 N"
+    },
+    {
+      "id": "D",
+      "text": "4,500 N"
+    }
+  ],
+  "answer": "C",
+  "explanation": "Correct! F = m × a = 500 kg × 4 m/s² = 2,000 N. This is the net force, after accounting for opposing forces.",
+  "lesson": "Newton’s second law connects net force, mass, and acceleration: F = m × a. A heavier rover needs more force for the same acceleration. A newton (N) is one kg·m/s².",
+  "hints": [
+    "Use Newton’s second law: F = m × a.",
+    "Identify mass = 500 kg and acceleration = 4 m/s². Multiply them.",
+    "Calculate 500 × 4. Your answer should be in newtons (N)."
+  ]
+}

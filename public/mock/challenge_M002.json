@@ -1,0 +1,34 @@
+{
+  "mission_id": "M002",
+  "question_id": "Q002",
+  "title": "Power the outpost",
+  "subject": "Energy",
+  "context": "Engineer Kai needs to check the energy stored by the solar array before the long Martian night.",
+  "question": "A solar array supplies a constant 200 W for 5 hours. How much energy does it supply?",
+  "options": [
+    {
+      "id": "A",
+      "text": "40 Wh"
+    },
+    {
+      "id": "B",
+      "text": "1,000 Wh"
+    },
+    {
+      "id": "C",
+      "text": "205 Wh"
+    },
+    {
+      "id": "D",
+      "text": "5,000 Wh"
+    }
+  ],
+  "answer": "B",
+  "explanation": "Correct! Energy = power × time = 200 W × 5 h = 1,000 Wh, or 1 kWh. Watts measure power; watt-hours measure energy.",
+  "lesson": "Power tells us how quickly energy is transferred. Energy = power × time. Multiplying watts by hours gives watt-hours (Wh). 1,000 Wh equals 1 kWh.",
+  "hints": [
+    "Energy equals power multiplied by time.",
+    "Power is 200 W and the time is 5 hours. Keep the time in hours to get Wh.",
+    "Multiply 200 by 5. Do not divide power by time."
+  ]
+}
