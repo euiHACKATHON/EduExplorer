@@ -11,6 +11,10 @@ import { state } from "./state/GameState.js";
 import { applyTheme } from "./ui/Theme.js";
 import { openMistakeJournal, renderJournalBadge } from "./ui/MistakeJournal.js";
 import {
+  openAITutor,
+  setAITutorAvailable,
+} from "./ui/AskAITutor.js";
+import {
   showModal,
   modal,
   paragraph,
@@ -40,6 +44,12 @@ new Phaser.Game({
 renderProgress();
 renderJournalBadge();
 document.querySelector("#journal-button").onclick = openMistakeJournal;
+document.querySelector("#ask-ai-button").onclick = openAITutor;
+const setConnectionUI = (live) => {
+  document.querySelector("#mode-badge").innerHTML = `<i></i> ${live ? "LIVE AI" : "OFFLINE"}`;
+  setAITutorAvailable(live);
+};
+setConnectionUI(false);
 document.querySelector("#settings-button").onclick = () => {
   showModal("Expedition settings", "CONNECTION");
   modal.append(
@@ -53,7 +63,7 @@ document.querySelector("#settings-button").onclick = () => {
       api.useMock = true;
       state.setMode("offline");
       renderProgress();
-      document.querySelector("#mode-badge").textContent = "OFFLINE";
+      setConnectionUI(false);
       renderJournalBadge();
       closeModal();
     },
@@ -72,7 +82,7 @@ document.querySelector("#settings-button").onclick = () => {
       api.useMock = false;
       state.setMode("live", progress);
       renderProgress();
-      document.querySelector("#mode-badge").textContent = "LIVE AI";
+      setConnectionUI(true);
       renderJournalBadge();
       closeModal();
     }),
@@ -113,7 +123,7 @@ settingsButton.onclick = () => {
             });
             renderProgress();
             renderJournalBadge();
-            document.querySelector("#mode-badge").textContent = "OFFLINE";
+            setConnectionUI(false);
             closeModal();
           }),
         );

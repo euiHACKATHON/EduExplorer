@@ -39,6 +39,10 @@ class _ExplainDraft(BaseModel):
     message: str
 
 
+class _AskDraft(BaseModel):
+    message: str
+
+
 _HINT_SYSTEM_PROMPT = (
     "You are a friendly Mars colony science tutor for ages 10-14. "
     "Rephrase the supplied hint using a Mars-themed analogy if it helps. "
@@ -53,6 +57,15 @@ _EXPLAIN_SYSTEM_PROMPT = (
     "Explain the supplied concept using a Mars-colony analogy. Preserve the "
     "scientific meaning exactly. Use at most 80 words. Never ask for "
     "personal information."
+)
+
+_ASK_SYSTEM_PROMPT = (
+    "You are the onboard science tutor in a retro space exploration game for "
+    "students ages 10-14. Answer only about the supplied lesson and closely "
+    "related science concepts. Be clear, encouraging, and concise (at most "
+    "100 words). Never reveal a quiz answer, a final numeric result, or which "
+    "option is correct. Instead teach the method with a different example. "
+    "Do not ask for or repeat personal information."
 )
 
 
@@ -108,6 +121,39 @@ async def generate_explanation(lesson_facts: LessonFacts) -> TutorResponse:
         return fallback
 
 
+async def answer_lesson_question(
+    lesson_facts: LessonFacts, question: str, history: list
+) -> TutorResponse:
+    fallback = TutorResponse(
+        message=(
+            "Tutor link interrupted. Review this field note: "
+            f"{lesson_facts.lesson}"
+        ),
+        source="authored-fallback",
+    )
+    if not os.getenv("GROQ_API_KEY"):
+        return fallback
+    try:
+        structured_llm = _get_llm().with_structured_output(_AskDraft)
+        messages = [
+            ("system", _ASK_SYSTEM_PROMPT),
+            (
+                "system",
+                f"Lesson subject: {lesson_facts.subject}\n"
+                f"Mission context: {lesson_facts.context}\n"
+                f"Approved lesson facts: {lesson_facts.lesson}",
+            ),
+        ]
+        for turn in history[-6:]:
+            messages.append(
+                ("assistant" if turn["role"] == "npc" else "human", turn["content"])
+            )
+        messages.append(("human", question))
+        draft: _AskDraft = await structured_llm.ainvoke(messages)
+        return TutorResponse(message=draft.message, source="ai")
+    except Exception:
+        return fallback
+
 async def tutor_node(state: AgentState) -> AgentState:
     """LangGraph node — handles both request_type 'hint' and 'explain'."""
 
@@ -119,6 +165,18 @@ async def tutor_node(state: AgentState) -> AgentState:
         state["hint_result"] = await generate_hint(state["lesson_facts"], level)
     elif state["request_type"] == "explain":
         state["tutor_result"] = await generate_explanation(state["lesson_facts"])
+    elif state["request_type"] == "ask":
+        question = state.get("user_message")
+        if not question:
+            raise ValueError("ask requests require state['user_message']")
+        history = state.get("conversation_history", [])
+        result = await answer_lesson_question(state["lesson_facts"], question, history)
+        state["tutor_result"] = result
+        state["conversation_history"] = [
+            *history,
+            {"role": "student", "content": question},
+            {"role": "npc", "content": result.message},
+        ][-12:]
     else:
         raise ValueError(
             f"tutor_node cannot handle request_type={state['request_type']!r}"

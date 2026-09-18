@@ -21,6 +21,7 @@ AgentNode = Literal["tutor", "scenario", "npc"]
 _ROUTES: dict[str, AgentNode] = {
     "hint": "tutor",
     "explain": "tutor",
+    "ask": "tutor",
     "scenario": "scenario",
     "dialogue": "npc",
 }

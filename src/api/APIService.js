@@ -82,6 +82,15 @@ export class APIService {
     const q = await this.getChallenge(id);
     return { message: q.lesson, source: "offline" };
   }
+  async askTutor(missionId, message) {
+    if (this.useMock)
+      throw new Error("Connect to Live AI before opening the tutor channel.");
+    return this.request(`${this.baseUrl}/ai/ask`, {
+      mission_id: missionId,
+      student_id: state.data.student_id,
+      message,
+    });
+  }
   async getProgress() {
     return this.useMock
       ? state.data

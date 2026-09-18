@@ -40,6 +40,7 @@ def test_supervisor_routes_every_request_type():
     assert route_request({"request_type": "dialogue"}) == "npc"
     assert route_request({"request_type": "hint"}) == "tutor"
     assert route_request({"request_type": "explain"}) == "tutor"
+    assert route_request({"request_type": "ask"}) == "tutor"
     assert route_request({"request_type": "scenario"}) == "scenario"
     with pytest.raises(ValueError):
         route_request({"request_type": "invalid"})
@@ -59,12 +60,33 @@ def test_post_generation_guard_detects_correct_option_text():
 
 def test_tutor_agents_use_structured_output(monkeypatch):
     monkeypatch.setenv("GROQ_API_KEY", "test-key")
-    model = FakeModel(values={"_HintDraft": {"hint": "Use the force relationship, then multiply."}, "_ExplainDraft": {"message": "Force changes how a rover moves."}})
+    model = FakeModel(values={"_HintDraft": {"hint": "Use the force relationship, then multiply."}, "_ExplainDraft": {"message": "Force changes how a rover moves."}, "_AskDraft": {"message": "Mass measures how much matter the rover contains."}})
     monkeypatch.setattr(tutor_agent, "_get_llm", lambda: model)
     hint = asyncio.run(tutor_agent.generate_hint(facts(), 1))
     explanation = asyncio.run(tutor_agent.generate_explanation(facts()))
+    answer = asyncio.run(tutor_agent.answer_lesson_question(facts(), "What is mass?", []))
     assert hint.source == "ai" and hint.level == 1
     assert explanation.source == "ai"
+    assert answer.source == "ai" and "Mass" in answer.message
+
+
+def test_graph_restores_tutor_chat_history(monkeypatch):
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    thread_id = f"ask-{uuid.uuid4()}"
+
+    def state(message):
+        return new_state(
+            "ask",
+            "cadet",
+            mission_id="M001",
+            lesson_facts=facts(),
+            user_message=message,
+        )
+
+    first = asyncio.run(run_agent(state("What is force?"), thread_id))
+    second = asyncio.run(run_agent(state("How does mass change it?"), thread_id))
+    assert len(first["conversation_history"]) == 2
+    assert len(second["conversation_history"]) == 4
 
 
 def test_rate_limit_or_provider_error_returns_authored_fallback(monkeypatch):

@@ -46,6 +46,8 @@ def test_all_ai_routes_have_safe_offline_fallbacks():
     explanation = client.post("/ai/explain", json={"mission_id": "M002"}).json()
     tutor_alias = client.post("/ai/tutor", json={"mission_id": "M002"}).json()
     assert explanation["source"] == "authored-fallback" and tutor_alias == explanation
+    chat = client.post("/ai/ask", json={"mission_id": "M001", "student_id": "test", "message": "What does force mean?"}).json()
+    assert chat["source"] == "authored-fallback" and "field note" in chat["message"]
     scenario = client.post("/ai/generate-scenario", json={"mission_id": "M003", "student_id": "test", "difficulty": 3}).json()
     assert scenario["source"] == "authored-fallback"
     assert scenario["mission_id"] == "M003" and scenario["difficulty"] == 3

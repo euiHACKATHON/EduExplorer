@@ -33,7 +33,7 @@ async def run_agent(state: AgentState, thread_id: str) -> AgentState:
     """Run one request while restoring prior NPC conversation history."""
 
     config = {"configurable": {"thread_id": thread_id}}
-    if state.get("request_type") == "dialogue":
+    if state.get("request_type") in ("dialogue", "ask"):
         snapshot = await compiled.aget_state(config)
         history = snapshot.values.get("conversation_history", [])
         if history and not state.get("conversation_history"):

@@ -9,7 +9,7 @@ from typing import Literal, Optional, TypedDict
 
 from .schemas import DialogueOption, HintResponse, LessonFacts, NPCResponse, ScenarioResponse, TutorResponse
 
-RequestType = Literal["dialogue", "explain", "hint", "scenario"]
+RequestType = Literal["dialogue", "explain", "hint", "scenario", "ask"]
 
 # A turn of conversation, stored so multi-turn NPC dialogue has context
 # across separate HTTP requests once the checkpointer is wired in (Step 7).
@@ -31,6 +31,7 @@ class AgentState(TypedDict, total=False):
     # challenge dict here, it may still contain the answer key.
     lesson_facts: Optional[LessonFacts]
     hint_level: Optional[int]          # 1-3, required when request_type == "hint"
+    user_message: Optional[str]
     hints_used: int                     # running count for this student+mission
 
     # The NPC Agent never generates these — they're deterministic, authored
@@ -78,6 +79,7 @@ def new_state(
         "question_id": None,
         "lesson_facts": None,
         "hint_level": None,
+        "user_message": None,
         "hints_used": 0,
         "npc_options": [],
         "difficulty_hint": None,

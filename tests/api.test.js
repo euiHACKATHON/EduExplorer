@@ -65,6 +65,22 @@ test("live assessments send the expected JSON POST", async () => {
   globalThis.fetch = originalFetch;
 });
 
+test("live tutor chat sends lesson and student context", async () => {
+  let seen;
+  globalThis.fetch = async (url, options) => {
+    seen = { url, options };
+    return { ok: true, json: async () => ({ message: "Force changes motion.", source: "ai" }) };
+  };
+  const api = new APIService("/api", false);
+  await api.askTutor("M001", "What is force?");
+  assert.equal(seen.url, "/api/ai/ask");
+  const payload = JSON.parse(seen.options.body);
+  assert.equal(payload.mission_id, "M001");
+  assert.equal(payload.message, "What is force?");
+  assert.equal(payload.student_id, state.data.student_id);
+  globalThis.fetch = originalFetch;
+});
+
 test("offline and live progress remain separate across mode switches and reload", () => {
   let saved;
   const memory = {

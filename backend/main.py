@@ -141,6 +141,11 @@ class Hint(Mission):
     level: int = Field(ge=1, le=3)
 
 
+class AskTutor(Mission):
+    student_id: str = Field(min_length=1, max_length=100, pattern=r"^[a-zA-Z0-9_-]+$")
+    message: str = Field(min_length=2, max_length=500)
+
+
 @app.post("/ai/hint")
 async def hint(payload: Hint):
     question = challenge(payload.mission_id)
@@ -202,6 +207,33 @@ async def tutor(payload: Mission):
     """Additive alias for teammates following the agent implementation plan."""
 
     return await _explain(payload)
+
+
+@app.post("/ai/ask")
+async def ask_tutor(payload: AskTutor):
+    question = challenge(payload.mission_id)
+    facts = lesson_facts_from_challenge(question)
+    state = new_state(
+        "ask",
+        payload.student_id,
+        mission_id=payload.mission_id,
+        question_id=facts.question_id,
+        lesson_facts=facts,
+        user_message=payload.message,
+    )
+    result = await run_agent(
+        state,
+        _thread_id("ask", payload.student_id, payload.mission_id),
+    )
+    response = result.get("tutor_result")
+    if not isinstance(response, TutorResponse):
+        raise HTTPException(503, "Tutor agent unavailable")
+    if response.source == "ai" and _contains_correct_answer(response.message, question):
+        response = TutorResponse(
+            message="I can help you work it out, but I cannot reveal the quiz answer. Which step feels unclear?",
+            source="authored-fallback",
+        )
+    return response.model_dump()
 
 
 class ScenarioRequest(Mission):

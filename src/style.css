@@ -113,6 +113,12 @@ header {
   border-color: #637087;
   background: #1a2331;
 }
+.ask-ai-button {
+  border-color: var(--theme-accent);
+  color: var(--theme-accent);
+  background: #1a2032;
+  box-shadow: 3px 3px 0 #0008;
+}
 .journal-button {
   display: flex;
   align-items: center;
@@ -1336,6 +1342,123 @@ dialog button.secondary,
   font-size: 6px;
   line-height: 1.8;
   letter-spacing: 0;
+}
+.tutor-chat-modal {
+  width: min(720px, calc(100% - 30px));
+  max-width: 720px;
+}
+.tutor-lesson-chip {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 14px;
+  padding: 11px 13px;
+  border: 2px solid #3d4967;
+  background: #0b1020;
+}
+.tutor-lesson-chip small,
+.tutor-lesson-chip strong {
+  display: block;
+}
+.tutor-lesson-chip small {
+  margin-bottom: 5px;
+  color: #7f8ba3;
+  font: 6px "Press Start 2P", monospace;
+}
+.tutor-lesson-chip strong {
+  color: #e9edf5;
+  font-size: 14px;
+}
+.tutor-log {
+  height: min(370px, 48vh);
+  overflow-y: auto;
+  padding: 16px;
+  border: 3px solid #303b58;
+  background:
+    linear-gradient(#ffffff08 1px, transparent 1px),
+    #080d1b;
+  background-size: 100% 24px;
+  scrollbar-color: var(--theme-accent) #10162a;
+}
+.tutor-message {
+  max-width: 84%;
+  margin-bottom: 16px;
+}
+.tutor-message.student {
+  margin-left: auto;
+}
+.tutor-message small {
+  display: block;
+  margin-bottom: 5px;
+  color: #75829c;
+  font: 6px "Press Start 2P", monospace;
+}
+.tutor-message.student small {
+  color: var(--theme-accent);
+  text-align: right;
+}
+.tutor-message p {
+  margin: 0;
+  padding: 11px 13px;
+  border: 2px solid #35415e;
+  color: #d5dbea;
+  background: #141b2e;
+  font-size: 15px;
+  line-height: 1.45;
+  box-shadow: 3px 3px 0 #02040a;
+}
+.tutor-message.student p {
+  border-color: var(--theme-border);
+  color: var(--theme-text);
+  background: var(--theme-surface);
+}
+.tutor-message em {
+  display: block;
+  margin-top: 5px;
+  color: #8d98aa;
+  font: normal 6px "Press Start 2P", monospace;
+}
+.tutor-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 9px;
+  margin-top: 12px;
+}
+.tutor-form input {
+  min-width: 0;
+  padding: 13px 14px;
+  border: 3px solid #46516e;
+  border-radius: 0;
+  outline: 0;
+  color: #f0f3f8;
+  background: #0a0f1e;
+  box-shadow: inset 3px 3px 0 #02040a;
+  font: 15px "Pixelify Sans", monospace;
+}
+.tutor-form input:focus {
+  border-color: var(--theme-accent);
+}
+dialog button.tutor-send {
+  width: auto;
+  min-width: 105px;
+  margin: 0;
+  font: 7px "Press Start 2P", monospace;
+}
+.tutor-error {
+  min-height: 18px;
+  margin: 8px 0 0;
+  font-size: 12px;
+}
+@media (max-width: 560px) {
+  .tutor-form {
+    grid-template-columns: 1fr;
+  }
+  dialog button.tutor-send {
+    width: 100%;
+  }
+  .tutor-message {
+    max-width: 94%;
+  }
 }
 @media (max-width: 700px) {
   header {
