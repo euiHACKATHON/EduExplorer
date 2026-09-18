@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Pixelify+Sans:wght@400;500;600;700&family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 :root {
   font-family: "DM Sans", Arial, sans-serif;
   color: #e5e9de;
@@ -1023,5 +1023,280 @@ dialog button.secondary {
   .controls {
     left: 9px;
     bottom: 9px;
+  }
+}
+
+/* ---------------------------------------------------------------
+   PIXEL THEME EXPERIMENT
+   Kept as a single override layer so the art direction is easy to remove.
+   --------------------------------------------------------------- */
+:root {
+  font-family: "Pixelify Sans", "Courier New", monospace;
+  font-size: 16px;
+  --pixel-ink: #080b18;
+  --pixel-panel: #12182a;
+  --pixel-panel-2: #1a2135;
+  --pixel-line: #3d4968;
+  --pixel-light: #f4eddb;
+  --pixel-muted: #9aa6bd;
+}
+html {
+  image-rendering: pixelated;
+}
+body {
+  background: #060915;
+}
+body::before {
+  opacity: 0.16;
+  background-image:
+    linear-gradient(90deg, #ffffff08 1px, transparent 1px),
+    linear-gradient(#ffffff08 1px, transparent 1px),
+    radial-gradient(circle at 20% 30%, #fff 0 1px, transparent 2px);
+  background-size: 4px 4px, 4px 4px, 83px 71px;
+}
+header {
+  height: 70px;
+  border-bottom: 4px solid #202a43;
+  background: #090d1a;
+  backdrop-filter: none;
+  box-shadow: 0 4px 0 #03050b;
+}
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--theme-accent);
+  border-radius: 0;
+  background: #171d30;
+  box-shadow: 4px 4px 0 #0008;
+  font: 8px "Press Start 2P", monospace;
+}
+.brand span:not(.brand-mark) {
+  font: 10px "Press Start 2P", monospace;
+  letter-spacing: 0;
+}
+.brand small {
+  margin-top: 6px;
+  color: var(--theme-accent);
+  font: 6px "Press Start 2P", monospace;
+  letter-spacing: 0;
+}
+.header-right,
+#mode-badge {
+  font-family: "Press Start 2P", monospace;
+  font-size: 7px;
+}
+#mode-badge i {
+  width: 7px;
+  height: 7px;
+  border-radius: 0;
+  box-shadow: 2px 0 0 #000;
+}
+.quiet {
+  padding: 9px 11px;
+  border: 2px solid transparent;
+  border-radius: 0;
+  font: 7px "Press Start 2P", monospace;
+}
+.quiet:hover {
+  border-color: var(--pixel-line);
+  background: var(--pixel-panel);
+  box-shadow: 3px 3px 0 #0008;
+}
+main {
+  padding-top: 28px;
+}
+.world-panel {
+  border: 4px solid #29334d;
+  border-radius: 0;
+  background: #070b17;
+  box-shadow:
+    10px 10px 0 #02030a,
+    0 0 0 3px #0d1222;
+}
+#game,
+#game canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+#level-hud {
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  min-height: 68px;
+  padding: 10px 13px;
+  border: 3px solid #35415f;
+  border-radius: 0;
+  background: #0b1020e8;
+  box-shadow: 5px 5px 0 #02040a99;
+  backdrop-filter: none;
+}
+.hud-glyph {
+  width: 42px;
+  height: 42px;
+  border: 3px solid var(--theme-accent);
+  border-radius: 0;
+  background: #1c2338;
+  box-shadow: 3px 3px 0 #0008;
+  font-size: 23px;
+}
+.hud-identity small,
+.hud-score small {
+  font: 6px "Press Start 2P", monospace;
+  letter-spacing: 0;
+}
+.hud-identity strong {
+  margin: 5px 0 3px;
+  font: 10px "Press Start 2P", monospace;
+}
+.hud-identity em {
+  color: #b0b9cc;
+  font-family: "Pixelify Sans", monospace;
+  font-size: 12px;
+}
+.realm-path i {
+  height: 3px;
+  background: #35415c;
+}
+.realm-node {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #3d4864;
+  border-radius: 0;
+  background: #12182a;
+  font: 7px "Press Start 2P", monospace;
+  box-shadow: 3px 3px 0 #0008;
+}
+.realm-node.active {
+  border-color: var(--theme-accent);
+  background: #293149;
+}
+.hud-score strong {
+  font: 16px "Press Start 2P", monospace;
+  text-shadow: 3px 3px 0 #0008;
+}
+.controls {
+  left: 16px;
+  bottom: 14px;
+  padding: 8px 10px;
+  border: 2px solid #303b56;
+  border-radius: 0;
+  background: #090e1de8;
+  font: 10px "Pixelify Sans", monospace;
+  backdrop-filter: none;
+  box-shadow: 3px 3px 0 #0008;
+}
+kbd {
+  padding: 3px 5px;
+  border: 2px solid #59647d;
+  border-radius: 0;
+  background: #20283d;
+  box-shadow: 2px 2px 0 #000;
+  font: 7px "Press Start 2P", monospace;
+}
+dialog {
+  padding: 32px;
+  border: 4px solid #4b5774;
+  border-radius: 0;
+  background: #111729;
+  box-shadow:
+    10px 10px 0 #02030a,
+    inset 0 0 0 3px #1d253b;
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, calc(100% - 12px) 4px, 100% 4px, 100% calc(100% - 12px), calc(100% - 4px) calc(100% - 12px), calc(100% - 4px) 100%, 12px 100%, 12px calc(100% - 4px), 0 calc(100% - 4px), 0 12px, 4px 12px, 4px 4px, 12px 4px);
+}
+dialog::backdrop {
+  background: #02040bdc;
+  backdrop-filter: none;
+}
+.modal-top .eyebrow {
+  color: var(--theme-accent);
+  font: 7px "Press Start 2P", monospace;
+  line-height: 1.7;
+  letter-spacing: 0;
+}
+.close {
+  width: 34px;
+  height: 34px;
+  border: 3px solid #59647d;
+  color: #dce2ec;
+  background: #1c2438;
+  font: 13px "Press Start 2P", monospace;
+  box-shadow: 3px 3px 0 #0008;
+}
+h2 {
+  margin: 24px 0 17px;
+  font: 14px/1.6 "Press Start 2P", monospace;
+  letter-spacing: 0;
+}
+dialog p {
+  color: #b9c2d2;
+  font-size: 16px;
+  line-height: 1.5;
+}
+dialog button.primary,
+dialog button.secondary,
+.choice {
+  border: 3px solid #59647d;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #03050b;
+  font-family: "Pixelify Sans", monospace;
+  font-size: 16px;
+  transition: none;
+}
+.primary {
+  border-color: #8b6c3f !important;
+}
+.primary:hover,
+.secondary:hover,
+.choice:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #03050b;
+}
+.choice.selected {
+  border-color: var(--theme-accent);
+  box-shadow: 4px 4px 0 var(--theme-accent-strong);
+}
+.victory-burst,
+.unlock-reveal,
+.journal-summary,
+.mistake-card,
+.journal-empty,
+.review-success {
+  border: 3px solid #46516d;
+  border-radius: 0;
+  background: #182037;
+  box-shadow: 4px 4px 0 #03050b;
+}
+.victory-burst {
+  border-color: var(--theme-accent);
+}
+.victory-label,
+.unlock-reveal small,
+.mistake-meta {
+  font-family: "Press Start 2P", monospace;
+  font-size: 6px;
+  line-height: 1.8;
+  letter-spacing: 0;
+}
+@media (max-width: 700px) {
+  header {
+    height: 60px;
+    border-bottom-width: 3px;
+  }
+  .brand span:not(.brand-mark) {
+    font-size: 7px;
+  }
+  .quiet {
+    padding: 7px;
+    font-size: 6px;
+  }
+  .world-panel {
+    border-width: 3px;
+    border-radius: 0;
+  }
+  #level-hud {
+    border-width: 2px;
+  }
+  dialog {
+    padding: 24px;
   }
 }
