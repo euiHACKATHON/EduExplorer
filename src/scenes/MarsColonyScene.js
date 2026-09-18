@@ -4,6 +4,7 @@ import { Player } from "../entities/Player.js";
 import { NPC } from "../entities/NPC.js";
 import { state } from "../state/GameState.js";
 import { modal, dialogue } from "../ui/DialogueUI.js";
+import { drawPixelSigil } from "../ui/PixelSigil.js";
 
 const STAR_MAPS = [
   [
@@ -118,13 +119,8 @@ export class MarsColonyScene extends Phaser.Scene {
     g.lineStyle(7, this.level.accent, 0.68).strokeCircle(180, 500, 74);
     g.lineStyle(2, 0xffffff, 0.55).strokeCircle(180, 500, 58);
     g.fillStyle(this.level.accent, 0.12).fillCircle(180, 500, 55);
-    this.add
-      .text(180, 500, this.level.constellation, {
-        fontSize: 58,
-        color: `#${this.level.accent.toString(16).padStart(6, "0")}`,
-      })
-      .setOrigin(0.5)
-      .setAlpha(0.85);
+    g.fillStyle(this.level.accent, 0.9);
+    drawPixelSigil(g, this.level, 180, 500, 8);
     this.drawConstellation(g);
     this.drawLandmark(g);
     this.add
@@ -240,7 +236,7 @@ export class MarsColonyScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setAlpha(0);
     const title = this.add
-      .text(WIDTH / 2, 154, `${this.level.constellation}  ${this.level.realm}`, {
+      .text(WIDTH / 2, 154, this.level.realm, {
         align: "center",
         fontFamily: "monospace",
         fontSize: 44,

@@ -16,9 +16,9 @@ export class CharacterSelectScene extends Phaser.Scene {
     showModal("Choose your starfarer", "CELESTIAL ATTUNEMENT");
     modal.append(paragraph("Every traveler carries a different cosmic light."));
     for (const [key, label] of [
-      ["amber", "☉  Solar / The Pathfinder"],
-      ["teal", "☽  Lunar / The Seer"],
-      ["violet", "✦  Nebula / The Dreamer"],
+      ["amber", "SOLAR // PATHFINDER"],
+      ["teal", "LUNAR // SEEKER"],
+      ["violet", "NEBULA // DREAMER"],
     ]) {
       const choice = button(
         label,

@@ -51,7 +51,7 @@ export function openMistakeJournal() {
     const meta = document.createElement("div");
     meta.className = "mistake-meta";
     const subject = document.createElement("span");
-    subject.textContent = `${level?.constellation || ""} ${item.subject}`;
+    subject.textContent = `${level?.realm || "WORLD"} // ${item.subject}`;
     const statusLabel = document.createElement("em");
     statusLabel.textContent = status;
     meta.append(subject, statusLabel);

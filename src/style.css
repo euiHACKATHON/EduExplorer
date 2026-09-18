@@ -243,6 +243,66 @@ h1 em {
   background: #1a2230;
   font-size: 23px;
 }
+.pixel-sigil {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  grid-template-columns: repeat(7, 4px);
+  grid-template-rows: repeat(7, 4px);
+  flex: 0 0 auto;
+}
+.pixel-sigil i {
+  width: 4px;
+  height: 4px;
+  background: transparent;
+}
+.pixel-sigil i.lit {
+  background: currentColor;
+  box-shadow: 0 0 5px currentColor;
+}
+.victory-sigil {
+  width: 56px;
+  height: 56px;
+  grid-template-columns: repeat(7, 8px);
+  grid-template-rows: repeat(7, 8px);
+  color: var(--theme-accent);
+}
+.victory-sigil i {
+  width: 8px;
+  height: 8px;
+}
+.path-sigil {
+  width: 21px;
+  height: 21px;
+  grid-template-columns: repeat(7, 3px);
+  grid-template-rows: repeat(7, 3px);
+}
+.path-sigil i {
+  width: 3px;
+  height: 3px;
+}
+.unlock-sigil {
+  margin: 0 auto 12px;
+  color: var(--theme-accent);
+}
+#game::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 3px,
+    #02040b 3px,
+    #02040b 4px
+  );
+}
+#game {
+  position: relative;
+}
 .hud-identity small,
 .hud-identity strong,
 .hud-identity em {

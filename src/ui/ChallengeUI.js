@@ -11,6 +11,7 @@ import {
 } from "./DialogueUI.js";
 import { renderProgress } from "./ProgressUI.js";
 import { getLevel, levels } from "../config.js";
+import { sigilHTML } from "./PixelSigil.js";
 
 function showVictory(mission, result) {
   const levelIndex = getLevel(mission);
@@ -23,7 +24,7 @@ function showVictory(mission, result) {
   const victory = document.createElement("div");
   victory.className = "victory-card";
   victory.innerHTML = `
-    <div class="victory-burst"><span>${level.constellation}</span></div>
+    <div class="victory-burst">${sigilHTML(level, "pixel-sigil victory-sigil")}</div>
     <p class="victory-label">REALM ${levelIndex + 1} CLEARED</p>
     <h3>${level.objective}</h3>
     <div class="victory-reward"><strong>+${result.xp_earned}</strong><small> STAR XP</small></div>
@@ -31,7 +32,7 @@ function showVictory(mission, result) {
       ${levels
         .map(
           (item, index) =>
-            `<span class="${index <= levelIndex ? "won" : index === levelIndex + 1 ? "unlocked" : ""}">${index <= levelIndex ? "✓" : item.constellation}</span>${index < levels.length - 1 ? "<i></i>" : ""}`,
+            `<span class="${index <= levelIndex ? "won" : index === levelIndex + 1 ? "unlocked" : ""}">${index <= levelIndex ? "OK" : sigilHTML(item, "pixel-sigil path-sigil")}</span>${index < levels.length - 1 ? "<i></i>" : ""}`,
         )
         .join("")}
     </div>`;
@@ -40,7 +41,7 @@ function showVictory(mission, result) {
   if (nextLevel) {
     const unlock = document.createElement("div");
     unlock.className = "unlock-reveal";
-    unlock.innerHTML = `<small>NEW REALM UNLOCKED</small><strong>${nextLevel.constellation} ${nextLevel.title}</strong><span>${nextLevel.subtitle}</span>`;
+    unlock.innerHTML = `${sigilHTML(nextLevel, "pixel-sigil unlock-sigil")}<small>NEW WORLD UNLOCKED</small><strong>${nextLevel.title}</strong><span>${nextLevel.subtitle}</span>`;
     modal.append(unlock);
     modal.append(
       button(`Travel to Realm ${levelIndex + 2} →`, () => {
@@ -136,7 +137,7 @@ export async function openChallenge(id, options = {}) {
     choices.append(b);
   });
   const hintButton = button(
-    "✦ Get a hint (0/3)",
+    "HINT (0/3)",
     () =>
       run(async () => {
         const data = await api.requestHint({
@@ -150,7 +151,7 @@ export async function openChallenge(id, options = {}) {
         hintBox.hidden = false;
         hintBox.textContent = `${data.source === "ai" ? "AI tutor" : data.source === "authored-fallback" ? "AI unavailable · field guide" : "Field guide"} · ${data.hint}`;
         hintButton.textContent =
-          hints === 3 ? "All 3 hints revealed" : `✦ Get a hint (${hints}/3)`;
+          hints === 3 ? "ALL HINTS USED" : `HINT (${hints}/3)`;
       }),
     "secondary",
   );

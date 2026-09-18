@@ -78,7 +78,7 @@ export async function dialogue(npc) {
     modal.append(
       paragraph(
         data.source === "ai"
-          ? "✦ AI-generated dialogue"
+          ? "AI GENERATED DIALOGUE"
           : data.source === "authored-fallback"
             ? "◇ AI unavailable · authored backup dialogue"
             : "◇ Authored expedition dialogue",
@@ -99,7 +99,7 @@ export async function dialogue(npc) {
                 paragraph(info.message, "hint"),
                 paragraph(
                   info.source === "ai"
-                    ? "✦ AI-generated explanation"
+                    ? "AI GENERATED EXPLANATION"
                     : "◇ Authored explanation",
                   "source",
                 ),

@@ -1,5 +1,6 @@
 import { state } from "../state/GameState.js";
 import { levels } from "../config.js";
+import { sigilHTML } from "./PixelSigil.js";
 
 let activeLevel = 0;
 
@@ -16,7 +17,7 @@ export function renderProgress() {
   const level = levels[activeLevel] || levels[0];
   const identity = document.createElement("div");
   identity.className = "hud-identity";
-  identity.innerHTML = `<span class="hud-glyph">${level.constellation}</span><span><small>WORLD ${activeLevel + 1} / ${levels.length}</small><strong>${level.title}</strong><em>${level.objective}</em></span>`;
+  identity.innerHTML = `<span class="hud-glyph">${sigilHTML(level)}</span><span><small>WORLD ${activeLevel + 1} / ${levels.length}</small><strong>${level.title}</strong><em>${level.objective}</em></span>`;
 
   const path = document.createElement("div");
   path.className = "realm-path";
