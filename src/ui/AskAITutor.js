@@ -71,6 +71,10 @@ export function openAITutor(missionId) {
   input.autocomplete = "off";
   input.placeholder = "Ask about this lesson...";
   input.setAttribute("aria-label", "Question for the AI tutor");
+  // Phaser listens for movement keys at window level. Stop chat keystrokes
+  // here so WASD and Space remain ordinary text while this field has focus.
+  input.addEventListener("keydown", (event) => event.stopPropagation());
+  input.addEventListener("keyup", (event) => event.stopPropagation());
   const send = button("SEND", null, "primary tutor-send");
   send.type = "submit";
   form.append(input, send);

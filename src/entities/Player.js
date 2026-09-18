@@ -9,6 +9,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.speed = 180;
     this.cursors = scene.input.keyboard.createCursorKeys();
     this.wasd = scene.input.keyboard.addKeys("W,A,S,D");
+    // Keep gameplay keys readable by Phaser without preventing those same
+    // characters (or spaces) from being entered in lesson chat fields.
+    scene.input.keyboard.removeCapture([
+      Phaser.Input.Keyboard.KeyCodes.W,
+      Phaser.Input.Keyboard.KeyCodes.A,
+      Phaser.Input.Keyboard.KeyCodes.S,
+      Phaser.Input.Keyboard.KeyCodes.D,
+      Phaser.Input.Keyboard.KeyCodes.SPACE,
+    ]);
     this.target = null;
   }
   update(blocked) {
