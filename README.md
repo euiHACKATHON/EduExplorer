@@ -24,7 +24,7 @@ python -m venv .venv
 # macOS/Linux: use .venv/bin/python instead
 ```
 
-Copy `.env.example` to `.env`. Set `OPENAI_API_KEY` there and, optionally, `OPENAI_MODEL` to a Responses-compatible model your account can access. Never put an API key in a `VITE_` variable or browser code.
+Copy `.env.example` to `.env`. Set `GROQ_API_KEY` there and, optionally, `GROQ_MODEL` to a Groq-hosted tool-capable model your account can access. Never put an API key in a `VITE_` variable or browser code.
 
 ```sh
 .venv/Scripts/python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
@@ -32,7 +32,7 @@ Copy `.env.example` to `.env`. Set `OPENAI_API_KEY` there and, optionally, `OPEN
 
 Keep Vite running in another terminal. Choose **Settings → Connect to live AI**. The Vite `/api` proxy forwards requests to FastAPI. API documentation: http://127.0.0.1:8000/docs.
 
-The integration uses the [OpenAI Responses API](https://developers.openai.com/api/docs/guides/text). It generates NPC mission briefings, concept explanations, and progressively scaffolded hints from reviewed lesson facts. No names or student IDs are sent to OpenAI. Generated text is inserted as text, never HTML. If generation fails, the game labels and uses authored fallback content.
+The integration uses Groq through LangChain and a LangGraph supervisor. It routes requests to dedicated NPC, tutor, and scenario agents that return validated structured output. Graded answers never enter model context. Generated text is inserted as text, never HTML; provider, validation, and rate-limit failures use authored fallback content.
 
 The three multiple-choice questions and their answer keys are deliberately authored; grading is deterministic, not performed by the language model. The current mastery score is a simple learning indicator based on correct answers and hints, not a calibrated Item Response Theory model. Generated content may need educator review.
 
@@ -46,14 +46,14 @@ Each first successful mission earns 100 XP minus 15 per hint, with up to three h
 
 ## Structure
 
-`src/scenes/` contains Boot, MainMenu, CharacterSelect, and MarsColony scenes. `src/entities/` contains the player controller and NPCs. `src/ui/` contains accessible HTML dialogs and the mission dashboard. `src/api/APIService.js` owns mock/live HTTP operations. `public/mock/` contains lesson JSON; Vite serves these at `/mock/`, not `/public/mock/`. `backend/main.py` provides dialogue, hints, explanations, challenges, assessment, and student-progress endpoints. Colony art is generated in Phaser; no external art files are required.
+`src/scenes/` contains the Phaser scenes, `src/ui/` contains accessible HTML dialogs, and `src/api/APIService.js` owns mock/live HTTP operations. `public/mock/` contains authored lesson JSON. `backend/main.py` provides the API and deterministic assessment; `backend/agents/` contains the LangGraph supervisor and NPC, tutor, and scenario agents. Realm art is generated in Phaser; no external art files are required.
 
 ## Validation
 
 ```sh
 npm test
 npm run build
-.venv/Scripts/python -m pytest backend/test_api.py -q
+.venv/Scripts/python -m pytest backend/test_api.py backend/tests -q
 ```
 
 Tests cover right/wrong answers, question validation, hint data, duplicate XP prevention, persistence, mode isolation, request payloads, private server answer keys, and AI fallback behavior. Browser checks cover welcome/suit selection, NPC navigation, dialogue, challenges, retries, hints, and completion feedback.
@@ -65,10 +65,10 @@ This is a local playable prototype. Public classroom deployment needs authentica
 ## Verification record
 
 - Frontend: 5 automated tests passed.
-- Backend: 4 automated tests passed, including simulated OpenAI responses and provider timeouts.
+- Backend: API and agent tests cover routing, structured output, fallbacks, answer-leak guards, and session memory.
 - Production build passed.
 - Browser: character selection, walking to NPC, explanations, wrong answers, hint retrieval, correct completion, and XP checked.
-- No OpenAI key was configured during implementation; a real provider request has not been run.
+- No live Groq request is required for automated validation; provider behavior is mocked.
 
 ## Clone EduExplorer
 
@@ -100,7 +100,7 @@ Second terminal (optional AI backend):
 py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r backend/requirements.txt
 Copy-Item .env.example .env
-# Edit .env and set OPENAI_API_KEY before starting the backend.
+# Edit .env and set GROQ_API_KEY before starting the backend.
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
@@ -121,7 +121,7 @@ Second terminal:
 python3 -m venv .venv
 .venv/bin/python -m pip install -r backend/requirements.txt
 cp .env.example .env
-# Edit .env and set OPENAI_API_KEY.
+# Edit .env and set GROQ_API_KEY.
 .venv/bin/python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 ```
 
@@ -131,8 +131,8 @@ Then open http://127.0.0.1:5173 and select **Settings → Connect to live AI**. 
 
 | Variable | Location | Purpose |
 | --- | --- | --- |
-| `OPENAI_API_KEY` | Server `.env` | Enables generated dialogue, explanations, and hints. |
-| `OPENAI_MODEL` | Server `.env` | Responses model; default `gpt-4.1-mini`. Requires account access. |
+| `GROQ_API_KEY` | Server `.env` | Enables generated dialogue, explanations, hints, and scenarios. |
+| `GROQ_MODEL` | Server `.env` | Groq-hosted model; default `openai/gpt-oss-20b`. |
 | `VITE_API_URL` | Frontend build environment | API base URL; default `/api`. Never use for secrets. |
 | `MARS_DB` | Server environment | Optional SQLite file path; default `backend/progress.sqlite3`. |
 
@@ -154,6 +154,8 @@ Then open http://127.0.0.1:5173 and select **Settings → Connect to live AI**. 
 | GET | `/challenges/M001` | Mission question and answer choices. |
 | POST | `/ai/hint` | Hint for a mission/question at level 1–3. |
 | POST | `/ai/explain` | Explanation of a mission's science concept. |
+| POST | `/ai/tutor` | Compatibility alias for a concept explanation. |
+| POST | `/ai/generate-scenario` | Structured narrative framing for an authored mission. |
 | POST | `/assessment` | Deterministic grading, XP, mastery, and feedback. |
 | GET | `/students/{student_id}/progress` | Saved server progress for the anonymous explorer ID. |
 
@@ -176,7 +178,7 @@ Request schemas and interactive examples are available at the running backend's 
 | `py` or `python3` is not recognized | Install Python, then reopen the terminal. |
 | Blank page from opening `index.html` | Run Vite and use the local URL; do not open the file directly. |
 | Live AI says connection unavailable | Start FastAPI on port 8000 and keep the backend terminal open. |
-| Live AI says no key is configured | Set the server's `OPENAI_API_KEY` in `.env` and restart FastAPI. |
+| Live AI says no key is configured | Set the server's `GROQ_API_KEY` in `.env` and restart FastAPI. |
 | Authored fallback appears in live mode | Check the API key, account access, model name, quota, and network connectivity. |
 | Port 5173 is occupied | Use Vite's displayed URL. The same-origin `/api` development proxy still forwards to port 8000. |
 | Progress seems different between modes | Offline and live progress are deliberately stored separately. |

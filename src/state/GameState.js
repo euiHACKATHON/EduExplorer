@@ -1,5 +1,7 @@
+import { getLevel, levels } from "../config.js";
+
 const key = "mars-colony-v1";
-const blank = () => ({ xp: 0, completed: [], mastery: {} });
+const blank = () => ({ xp: 0, completed: [], mastery: {}, mistakes: [] });
 export class GameState {
   constructor(storage = globalThis.localStorage) {
     this.storage = storage;
@@ -23,6 +25,7 @@ export class GameState {
     if (!Array.isArray(this.data.completed)) this.data.completed = [];
     if (!this.data.mastery || typeof this.data.mastery !== "object")
       this.data.mastery = {};
+    if (!Array.isArray(this.data.mistakes)) this.data.mistakes = [];
     if (!Number.isFinite(this.data.xp)) this.data.xp = 0;
   }
   snapshot() {
@@ -30,6 +33,7 @@ export class GameState {
       xp: this.data.xp,
       completed: [...(this.data.completed || [])],
       mastery: { ...this.data.mastery },
+      mistakes: [...(this.data.mistakes || [])],
     };
   }
   save() {
@@ -44,10 +48,19 @@ export class GameState {
   setMode(mode, progress) {
     this.profiles[this.mode] = this.snapshot();
     this.mode = mode;
-    Object.assign(this.data, progress || this.profiles[mode] || blank());
+    Object.assign(this.data, blank(), progress || this.profiles[mode] || {});
+    if (!Array.isArray(this.data.mistakes)) this.data.mistakes = [];
     this.save();
   }
+  isMissionUnlocked(mission) {
+    const level = getLevel(mission);
+    if (level < 0) return false;
+    return levels
+      .slice(0, level)
+      .every((earlier) => this.data.completed.includes(earlier.mission));
+  }
   award(mission, result) {
+    if (!this.isMissionUnlocked(mission)) return false;
     if (result.correct && !this.data.completed.includes(mission)) {
       this.data.completed.push(mission);
       this.data.xp += result.xp_earned;
@@ -57,6 +70,45 @@ export class GameState {
       result.mastery,
     );
     this.save();
+    return result.correct;
+  }
+  recordMistake(question, selected, feedback = "") {
+    const option = question.options.find((item) => item.id === selected);
+    const existing = this.data.mistakes.find(
+      (item) =>
+        item.questionId === question.question_id && item.answerId === selected,
+    );
+    if (existing) {
+      existing.attempts += 1;
+      existing.lastTried = Date.now();
+      existing.feedback = feedback || existing.feedback;
+      existing.resolved = false;
+    } else {
+      this.data.mistakes.unshift({
+        mission: question.mission_id,
+        questionId: question.question_id,
+        title: question.title,
+        subject: question.subject,
+        question: question.question,
+        answerId: selected,
+        answerText: option?.text || selected,
+        feedback,
+        attempts: 1,
+        lastTried: Date.now(),
+        resolved: false,
+      });
+    }
+    this.save();
+  }
+  resolveMistakes(questionId) {
+    let changed = false;
+    this.data.mistakes.forEach((item) => {
+      if (item.questionId === questionId && !item.resolved) {
+        item.resolved = true;
+        changed = true;
+      }
+    });
+    if (changed) this.save();
   }
   sync(progress) {
     Object.assign(this.data, progress);

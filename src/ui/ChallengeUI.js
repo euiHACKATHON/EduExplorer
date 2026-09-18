@@ -10,7 +10,64 @@ import {
   isCurrentModal,
 } from "./DialogueUI.js";
 import { renderProgress } from "./ProgressUI.js";
-export async function openChallenge(id) {
+import { getLevel, levels } from "../config.js";
+
+function showVictory(mission, result) {
+  const levelIndex = getLevel(mission);
+  const level = levels[levelIndex];
+  const nextLevel = levels[levelIndex + 1];
+  showModal(
+    nextLevel ? `${level.title} restored` : "The zodiac is restored",
+    nextLevel ? "LEVEL COMPLETE" : "FINAL VICTORY",
+  );
+  const victory = document.createElement("div");
+  victory.className = "victory-card";
+  victory.innerHTML = `
+    <div class="victory-burst"><span>${level.constellation}</span></div>
+    <p class="victory-label">REALM ${levelIndex + 1} CLEARED</p>
+    <h3>${level.objective}</h3>
+    <div class="victory-reward"><strong>+${result.xp_earned}</strong><small> STAR XP</small></div>
+    <div class="victory-path" aria-label="Level completion path">
+      ${levels
+        .map(
+          (item, index) =>
+            `<span class="${index <= levelIndex ? "won" : index === levelIndex + 1 ? "unlocked" : ""}">${index <= levelIndex ? "✓" : item.constellation}</span>${index < levels.length - 1 ? "<i></i>" : ""}`,
+        )
+        .join("")}
+    </div>`;
+  modal.append(victory);
+
+  if (nextLevel) {
+    const unlock = document.createElement("div");
+    unlock.className = "unlock-reveal";
+    unlock.innerHTML = `<small>NEW REALM UNLOCKED</small><strong>${nextLevel.constellation} ${nextLevel.title}</strong><span>${nextLevel.subtitle}</span>`;
+    modal.append(unlock);
+    modal.append(
+      button(`Travel to Realm ${levelIndex + 2} →`, () => {
+        closeModal();
+        window.dispatchEvent(
+          new CustomEvent("enter-level", { detail: levelIndex + 1 }),
+        );
+      }),
+    );
+  } else {
+    modal.append(
+      paragraph(
+        "Every guardian star is shining. You have mastered all three celestial trials.",
+        "victory-message",
+      ),
+      button("Return to the realm →", closeModal),
+    );
+  }
+}
+export async function openChallenge(id, options = {}) {
+  if (!state.isMissionUnlocked(id)) {
+    showModal("Level locked", "TRAINING SEQUENCE");
+    modal.append(
+      paragraph("Pass the previous level's quiz before starting this one."),
+    );
+    return;
+  }
   showModal("Preparing your mission…", "MISSION CONTROL");
   const loadToken = modalRevision();
   let q;
@@ -112,27 +169,38 @@ export async function openChallenge(id) {
       });
       // The server may accept a submission even if the learner closes its dialog.
       if (!isCurrentModal(token)) return;
+      const wasCompleted = state.data.completed.includes(id);
       state.award(id, result);
+      if (result.correct) state.resolveMistakes(q.question_id);
+      else state.recordMistake(q, selected, result.feedback);
       renderProgress();
+      window.dispatchEvent(new Event("mistakes-changed"));
       feedback.textContent = result.feedback;
       feedback.className = `feedback ${result.correct ? "success" : "error"}`;
       if (result.correct) {
         finished = true;
-        submit.hidden = true;
-        hintButton.hidden = true;
-        modal.append(
-          paragraph(
-            `+${result.xp_earned} XP · Colony system restored`,
-            "reward",
-          ),
-          button("Return to the colony →", closeModal),
-        );
         window.dispatchEvent(
           new CustomEvent("mission-complete", { detail: id }),
         );
+        if (options.review && wasCompleted) {
+          showModal("Mistake mastered", "LEARNING JOURNAL");
+          modal.append(
+            paragraph(
+              "You answered this question correctly. It is now marked as mastered in your journal.",
+              "review-success",
+            ),
+            button("Back to the journal", () =>
+              window.dispatchEvent(new Event("open-journal")),
+            ),
+          );
+        } else showVictory(id, result);
       }
     }),
   );
   updateControls();
   modal.append(choices, hintBox, feedback, hintButton, submit);
 }
+
+window.addEventListener("review-question", (event) =>
+  openChallenge(event.detail, { review: true }),
+);

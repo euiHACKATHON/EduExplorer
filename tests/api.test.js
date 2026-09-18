@@ -85,3 +85,50 @@ test("offline and live progress remain separate across mode switches and reload"
   game.setMode("offline");
   assert.equal(game.data.xp, 100);
 });
+
+test("levels unlock in order only after each quiz is passed", () => {
+  const memory = {
+    getItem: () => null,
+    setItem: () => {},
+  };
+  const game = new GameState(memory);
+  assert.equal(game.isMissionUnlocked("M001"), true);
+  assert.equal(game.isMissionUnlocked("M002"), false);
+  assert.equal(game.isMissionUnlocked("M003"), false);
+
+  assert.equal(
+    game.award("M002", { correct: true, xp_earned: 100, mastery: 1 }),
+    false,
+  );
+  assert.deepEqual(game.data.completed, []);
+
+  game.award("M001", { correct: false, xp_earned: 0, mastery: 0.2 });
+  assert.equal(game.isMissionUnlocked("M002"), false);
+
+  game.award("M001", { correct: true, xp_earned: 100, mastery: 1 });
+  assert.equal(game.isMissionUnlocked("M002"), true);
+  assert.equal(game.isMissionUnlocked("M003"), false);
+
+  game.award("M002", { correct: true, xp_earned: 100, mastery: 1 });
+  assert.equal(game.isMissionUnlocked("M003"), true);
+});
+
+test("mistake journal keeps attempts and marks reviewed questions resolved", () => {
+  const memory = { getItem: () => null, setItem: () => {} };
+  const game = new GameState(memory);
+  const question = {
+    mission_id: "M001",
+    question_id: "Q001",
+    title: "Rover force",
+    subject: "Physics",
+    question: "What force is required?",
+    options: [{ id: "A", text: "125 N" }],
+  };
+  game.recordMistake(question, "A", "Try multiplying mass and acceleration.");
+  game.recordMistake(question, "A", "Try again.");
+  assert.equal(game.data.mistakes.length, 1);
+  assert.equal(game.data.mistakes[0].attempts, 2);
+  assert.equal(game.data.mistakes[0].resolved, false);
+  game.resolveMistakes("Q001");
+  assert.equal(game.data.mistakes[0].resolved, true);
+});

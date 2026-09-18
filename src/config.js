@@ -29,3 +29,46 @@ export const crew = [
     color: 0xa4bd7d,
   },
 ];
+
+export const levels = [
+  {
+    mission: "M001",
+    title: "The Aries Forge",
+    objective: "Unstick the star rover",
+    subject: "Physics",
+    realm: "ARIES",
+    subtitle: "Crimson Dunes of Motion",
+    constellation: "♈",
+    accent: 0xffad66,
+    sky: 0x160d25,
+    ground: 0x77384b,
+  },
+  {
+    mission: "M002",
+    title: "The Aquarius Circuit",
+    objective: "Power the astral outpost",
+    subject: "Energy",
+    realm: "AQUARIUS",
+    subtitle: "Electric Gardens of the Water-Bearer",
+    constellation: "♒",
+    accent: 0x7fe7ff,
+    sky: 0x071d38,
+    ground: 0x164c67,
+  },
+  {
+    mission: "M003",
+    title: "The Virgo Conservatory",
+    objective: "Grow the celestial garden",
+    subject: "Biology",
+    realm: "VIRGO",
+    subtitle: "Living Sanctuary Among the Stars",
+    constellation: "♍",
+    accent: 0xc7f28b,
+    sky: 0x10251f,
+    ground: 0x35664d,
+  },
+];
+
+export function getLevel(mission) {
+  return levels.findIndex((level) => level.mission === mission);
+}

@@ -12,16 +12,16 @@ export class MainMenuScene extends Phaser.Scene {
   }
   create() {
     this.scene.start("MarsColonyScene");
-    showModal("Your next discovery is waiting.", "WELCOME TO MARS");
+    showModal("The observatory has lost contact.", "EXPEDITION BRIEF");
     modal.append(
       paragraph(
-        "The colony needs a curious mind. Join three crewmates, bring essential systems back online, and discover the science that makes life on Mars possible.",
+        "Three remote worlds have gone dark. Travel to each station, help its crew solve the failure, and bring the observatory network back online.",
       ),
       paragraph(
-        "Three missions · Explore at your own pace · Ages 10+",
+        "Three worlds. Three science missions. One route home.",
         "source",
       ),
-      button("Begin expedition →", () => {
+      button("Begin expedition", () => {
         closeModal();
         this.scene.start("CharacterSelectScene");
       }),

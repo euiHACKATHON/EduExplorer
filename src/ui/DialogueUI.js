@@ -1,5 +1,7 @@
 import { api } from "../api/APIService.js";
 import { openChallenge } from "./ChallengeUI.js";
+import { state } from "../state/GameState.js";
+import { getLevel } from "../config.js";
 export const modal = document.querySelector("#overlay");
 let opener;
 let revision = 0;
@@ -57,6 +59,14 @@ export async function pending(b, fn) {
   }
 }
 export async function dialogue(npc) {
+  if (!state.isMissionUnlocked(npc.mission)) {
+    const level = getLevel(npc.mission) + 1;
+    showModal(`Level ${level} is locked`, "TRAINING SEQUENCE");
+    modal.append(
+      paragraph(`Pass Level ${level - 1}'s quiz to unlock this lesson.`),
+    );
+    return;
+  }
   showModal(npc.name, npc.role.toUpperCase());
   const token = modalRevision();
   const loading = paragraph("Connecting to your crewmate…");
