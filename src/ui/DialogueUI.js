@@ -110,6 +110,20 @@ export async function dialogue(npc) {
       );
       modal.append(b);
     }
+    if (!api.useMock) {
+      modal.append(
+        button(
+          "ASK AI ABOUT THIS LESSON",
+          () => {
+            closeModal();
+            window.dispatchEvent(
+              new CustomEvent("open-ai-tutor", { detail: npc.mission }),
+            );
+          },
+          "secondary ask-ai-dialogue",
+        ),
+      );
+    }
   } catch (e) {
     if (isCurrentModal(token)) {
       loading.textContent = e.message;

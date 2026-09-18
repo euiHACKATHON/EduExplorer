@@ -114,10 +114,13 @@ header {
   background: #1a2331;
 }
 .ask-ai-button {
-  border-color: var(--theme-accent);
-  color: var(--theme-accent);
-  background: #1a2032;
-  box-shadow: 3px 3px 0 #0008;
+  border-color: transparent;
+  color: #aab2bf;
+  background: transparent;
+  box-shadow: none;
+}
+.ask-ai-dialogue {
+  color: var(--theme-accent) !important;
 }
 .journal-button {
   display: flex;

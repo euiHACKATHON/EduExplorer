@@ -44,7 +44,7 @@ new Phaser.Game({
 renderProgress();
 renderJournalBadge();
 document.querySelector("#journal-button").onclick = openMistakeJournal;
-document.querySelector("#ask-ai-button").onclick = openAITutor;
+document.querySelector("#ask-ai-button").onclick = () => openAITutor();
 const setConnectionUI = (live) => {
   document.querySelector("#mode-badge").innerHTML = `<i></i> ${live ? "LIVE AI" : "OFFLINE"}`;
   setAITutorAvailable(live);

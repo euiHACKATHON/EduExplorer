@@ -32,8 +32,11 @@ export function setAITutorAvailable(available) {
   if (trigger) trigger.hidden = !available;
 }
 
-export function openAITutor() {
-  const level = levels[activeLevel] || levels[0];
+export function openAITutor(missionId) {
+  const requestedLevel = missionId
+    ? levels.findIndex((level) => level.mission === missionId)
+    : activeLevel;
+  const level = levels[requestedLevel >= 0 ? requestedLevel : activeLevel] || levels[0];
   showModal(level.title, `AI TUTOR // ${level.subject.toUpperCase()}`);
   modal.classList.add("tutor-chat-modal");
   modal.addEventListener(
@@ -107,3 +110,5 @@ export function openAITutor() {
   modal.append(lesson, log, form, error);
   input.focus();
 }
+
+window.addEventListener("open-ai-tutor", (event) => openAITutor(event.detail));
