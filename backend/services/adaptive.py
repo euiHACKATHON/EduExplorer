@@ -6,6 +6,7 @@ guidance. Swap for BKT / knowledge tracing / IRT later without touching the
 API shape: keep `update_mastery` returning (xp, score).
 """
 from ..config import TRANSFER_GAP_THRESHOLD
+from .curriculum import challenge
 
 
 def level_for_score(score: float) -> str:
@@ -17,30 +18,121 @@ def level_for_score(score: float) -> str:
 
 
 def update_mastery(
-    db, student: str, mission: str, context: str, correct: bool, hints_used: int
+    db,
+    student: str,
+    mission: str,
+    context: str,
+    correct: bool,
+    hints_used: int,
+    difficulty: int = 1,
 ) -> tuple[int, float]:
-    """Shared scoring path for both /assessment and resolved predictions.
+    """Update mastery using a recency-weighted evidence model.
 
-    The caller owns the surrounding transaction and the commit.
+    Correct answers increase mastery; incorrect answers decrease it.
+    Difficulty is currently inferred from the available game context and
+    will be made explicit when the curriculum exposes difficulty metadata.
+
+    The caller owns the surrounding transaction and commit.
     """
     previous = db.execute(
-        'SELECT xp,score FROM mastery WHERE student=? AND mission=? AND context=?',
+        'SELECT xp, score, attempts FROM mastery '
+        'WHERE student=? AND mission=? AND context=?',
         (student, mission, context),
     ).fetchone()
-    already = bool(previous and previous[0] > 0)
-    xp = max(50, 100 - 15 * hints_used) if correct and not already else 0
-    score = max(
-        previous[1] if previous else 0,
-        max(.6, 1 - .15 * hints_used) if correct else .2,
-    )
+
+    old_score = previous[1] if previous else 0.0
+    already_completed = bool(previous and previous[0] > 0)
+
+    # Base evidence:
+    #   correct -> 1.0
+    #   incorrect -> 0.0
+    #
+    # Hints reduce the strength of evidence because the student received
+    # assistance before producing the answer.
+    if correct:
+        difficulty_weight = 0.8 + (difficulty - 1) * 0.05
+        evidence = min(
+            1.0,
+            max(0.6, difficulty_weight - 0.15 * hints_used),
+        )
+    else:
+        evidence = max(0.0, 0.2 - (difficulty - 1) * 0.025)
+
+    # Recency/update rate.
+    alpha = 0.20
+
+    new_score = (1 - alpha) * old_score + alpha * evidence
+    new_score = max(0.0, min(1.0, new_score))
+
+    # XP remains separate from mastery.
+    xp = max(50, 100 - 15 * hints_used) if correct and not already_completed else 0
+
     db.execute(
-        'INSERT INTO mastery(student,mission,context,xp,score,attempts) VALUES(?,?,?,?,?,1) '
+        'INSERT INTO mastery('
+        'student,mission,context,xp,score,attempts,difficulty'
+        ') VALUES(?,?,?,?,?,?,?) '
         'ON CONFLICT(student,mission,context) DO UPDATE SET '
-        'xp=MAX(mastery.xp,excluded.xp), score=MAX(mastery.score,excluded.score), '
-        'attempts=mastery.attempts+1',
-        (student, mission, context, xp, score),
+        'xp=MAX(mastery.xp,excluded.xp), '
+        'score=excluded.score, '
+        'attempts=mastery.attempts+1, '
+        'difficulty=excluded.difficulty',
+        (student, mission, context, xp, new_score, 1, difficulty),
     )
-    return xp, score
+
+    return xp, new_score
+
+
+def student_state(db, student: str) -> list[dict]:
+    """Return the adaptive learning state for each mission/context.
+
+    The state is derived from the mastery table and attempt history so the
+    adaptive engine has both current mastery and supporting evidence.
+    """
+    rows = db.execute(
+        """
+        SELECT
+            m.mission,
+            m.context,
+            m.score,
+            m.attempts,
+            m.difficulty,
+            COALESCE(SUM(a.correct), 0) AS correct,
+            COALESCE(SUM(a.hints_used), 0) AS hints_used,
+            MAX(a.created_at) AS last_attempt
+        FROM mastery AS m
+        LEFT JOIN attempts AS a
+            ON a.student = m.student
+            AND a.mission = m.mission
+            AND a.context = m.context
+        WHERE m.student = ?
+        GROUP BY m.mission, m.context
+        ORDER BY m.mission, m.context
+        """,
+        (student,),
+    ).fetchall()
+
+    return [
+        {
+            'mission_id': mission,
+            'context': context,
+            'mastery': score,
+            'attempts': attempts,
+            'correct': correct,
+            'hints_used': hints_used,
+            'last_attempt': last_attempt,
+            'current_difficulty': difficulty,
+        }
+        for (
+            mission,
+            context,
+            score,
+            attempts,
+            difficulty,
+            correct,
+            hints_used,
+            last_attempt,
+        ) in rows
+    ]
 
 
 def transfer_gaps(rows) -> list[str]:
@@ -71,10 +163,112 @@ def build_progress(rows) -> dict:
     }
 
 
-def next_challenge(db, student_id: str) -> dict:
-    """What should this student attempt next? Person 2 implements.
+def hint_level(
+    db,
+    student_id: str,
+    mission: str,
+    context: str,
+    time_seconds: float,
+    explicit_request: bool = False,
+) -> int:
+    """Choose a hint level from recent performance and time spent."""
+    recent_failures = db.execute(
+        """
+        SELECT correct
+        FROM attempts
+        WHERE student = ?
+          AND mission = ?
+          AND context = ?
+        ORDER BY id DESC
+        LIMIT 3
+        """,
+        (student_id, mission, context),
+    ).fetchall()
 
-    Expected shape:
-      {'mission_id': str, 'context': str, 'difficulty': int, 'reason': str}
-    """
-    raise NotImplementedError('Person 2: adaptive challenge selection')
+    failure_count = sum(
+        1 for (correct,) in recent_failures if not correct
+    )
+
+    if failure_count >= 3:
+        return 3
+
+    if failure_count >= 2:
+        return 2
+
+    if explicit_request:
+        return 1
+
+    if time_seconds > 60:
+        return 1
+
+    return 0
+
+
+def next_challenge(db, student_id: str) -> dict:
+    """Choose the next learning activity from the student's current state."""
+    states = student_state(db, student_id)
+
+    if not states:
+        curriculum = challenge('M001')
+        return {
+    'mission_id': 'M001',
+    'objective_id': curriculum.get('objective_id'),
+    'context': 'numerical',
+    'difficulty': 1,
+    'activity_type': curriculum.get('activity_type', 'calculation'),
+    'skills': curriculum.get('skills', []),
+    'reason': 'Start with a foundational numerical activity.',
+}
+    # Focus on the weakest known learning area.
+    weakest = min(states, key=lambda item: item['mastery'])
+    curriculum = challenge(weakest['mission_id'])
+    recent_failures = db.execute(
+        """
+        SELECT correct
+        FROM attempts
+        WHERE student = ?
+          AND mission = ?
+          AND context = ?
+        ORDER BY id DESC
+        LIMIT 3
+        """,
+        (
+            student_id,
+            weakest['mission_id'],
+            weakest['context'],
+        ),
+    ).fetchall()
+
+    recent_failure_count = sum(
+        1 for (correct,) in recent_failures if not correct
+    )
+
+
+    mastery = weakest['mastery']
+    current_difficulty = weakest['current_difficulty']
+
+    if recent_failure_count >= 2:
+        difficulty = min(3, max(1, current_difficulty))
+        reason = 'Recent failures were detected, so a review activity is recommended.'
+    elif mastery < 0.40:
+        difficulty = max(1, current_difficulty - 1)
+        reason = 'Mastery is weak, so a remedial activity is recommended.'
+    elif mastery < 0.60:
+        difficulty = min(5, max(1, current_difficulty))
+        reason = 'Mastery is developing, so continue with an accessible activity.'
+    elif mastery < 0.80:
+        difficulty = min(5, current_difficulty + 1)
+        reason = 'Mastery is moderate, so increase the challenge.'
+    else:
+        difficulty = min(5, current_difficulty + 1)
+        reason = 'Mastery is strong, so an advanced activity is recommended.'
+
+    return {
+    'mission_id': weakest['mission_id'],
+    'objective_id': curriculum.get('objective_id'),
+    'context': weakest['context'],
+    'difficulty': difficulty,
+    'activity_type': curriculum.get('activity_type', 'calculation'),
+    'skills': curriculum.get('skills', []),
+    'reason': reason,
+}

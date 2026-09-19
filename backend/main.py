@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import ALLOWED_ORIGINS, groq_key
 from .database import init_db
-from .routers import ai, assessment, auth, missions, predictions, students
+from .routers import adaptive, ai, assessment, auth, missions, predictions, students
 from .services.ai_agents import _contains_correct_answer  # noqa: F401  (re-export)
 from .services.curriculum import challenge  # noqa: F401  (re-export)
 
@@ -36,6 +36,7 @@ def create_app() -> FastAPI:
         return {'status': 'ok', 'ai_available': bool(groq_key()), 'provider': 'groq'}
 
     app.include_router(auth.router)
+    app.include_router(adaptive.router)
     app.include_router(students.router)
     app.include_router(missions.router)
     app.include_router(ai.router)

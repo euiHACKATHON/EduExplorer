@@ -5,8 +5,8 @@ from fastapi import APIRouter, HTTPException
 
 from ..config import MISSION_NPCS
 from ..schemas import AskTutor, Hint, Mission, ScenarioRequest
-from ..services import ai_agents, curriculum
-
+from ..database import connect
+from ..services import adaptive, ai_agents, curriculum
 router = APIRouter(prefix='/ai', tags=['ai'])
 
 
@@ -22,8 +22,23 @@ async def hint(payload: Hint):
     raw_challenge = curriculum.challenge(payload.mission_id)
     if raw_challenge['question_id'] != payload.question_id:
         raise HTTPException(400, 'Question does not match mission')
+
+    with connect() as db:
+        level = adaptive.hint_level(
+            db,
+            payload.student_id,
+            payload.mission_id,
+            'numerical',
+            time_seconds=0,
+            explicit_request=True,
+        )
+
     return await ai_agents.hint(
-        payload.mission_id, payload.question_id, payload.student_id, payload.level, raw_challenge,
+        payload.mission_id,
+        payload.question_id,
+        payload.student_id,
+        level,
+        raw_challenge,
     )
 
 

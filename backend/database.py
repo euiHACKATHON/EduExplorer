@@ -32,8 +32,17 @@ def init_db() -> None:
         db.execute(
             'CREATE TABLE IF NOT EXISTS mastery ('
             'student TEXT, mission TEXT, context TEXT, xp INTEGER, score REAL, '
-            'attempts INTEGER DEFAULT 0, PRIMARY KEY(student,mission,context))'
+            'attempts INTEGER DEFAULT 0, difficulty INTEGER DEFAULT 1, '
+            'PRIMARY KEY(student,mission,context))'
         )
+
+        mastery_cols = [
+            row[1] for row in db.execute('PRAGMA table_info(mastery)').fetchall()
+        ]
+        if 'difficulty' not in mastery_cols:
+            db.execute(
+                'ALTER TABLE mastery ADD COLUMN difficulty INTEGER DEFAULT 1'
+            )
         db.execute(
             'CREATE TABLE IF NOT EXISTS attempts ('
             'id INTEGER PRIMARY KEY AUTOINCREMENT, student TEXT, mission TEXT, '

@@ -1,8 +1,13 @@
 {
   "mission_id": "M003",
   "question_id": "Q003",
+  "objective_id": "photosynthesis_inputs",
+  "prerequisites": [],
+  "skills": ["conceptual"],
+  "activity_type": "conceptual",
   "title": "Grow a greener Mars",
   "subject": "Biology",
+  "difficulty": 1,
   "context": "Dr. Noor is preparing the greenhouse. Healthy plants will help supply food and oxygen to the colony.",
   "question": "Which inputs do plants use for photosynthesis?",
   "options": [

@@ -1,8 +1,13 @@
 {
   "mission_id": "M001",
   "question_id": "Q001",
+  "objective_id": "newtons_second_law",
+  "prerequisites": [],
+  "skills": ["calculation"],
+  "activity_type": "calculation",
   "title": "Unstick the rover",
   "subject": "Physics",
+  "difficulty": 2,
   "context": "Rover Beta is stuck in Sector 4. Help Dr. Sara calculate the net force needed to get it moving.",
   "question": "A 500 kg rover needs an acceleration of 4 m/s². What net force is required?",
   "options": [

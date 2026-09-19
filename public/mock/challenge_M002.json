@@ -1,8 +1,13 @@
 {
   "mission_id": "M002",
   "question_id": "Q002",
+  "objective_id": "energy_power_time",
+  "prerequisites": [],
+  "skills": ["calculation"],
+  "activity_type": "calculation",
   "title": "Power the outpost",
   "subject": "Energy",
+  "difficulty": 2,
   "context": "Engineer Kai needs to check the energy stored by the solar array before the long Martian night.",
   "question": "A solar array supplies a constant 200 W for 5 hours. How much energy does it supply?",
   "options": [

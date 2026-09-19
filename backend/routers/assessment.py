@@ -24,9 +24,14 @@ def assess(payload: Assessment, current_student: str = Depends(get_current_stude
     with connect() as db:
         db.execute('BEGIN IMMEDIATE')
         xp, mastery = adaptive.update_mastery(
-            db, payload.student_id, payload.mission_id,
-            payload.context, correct, payload.hints_used,
-        )
+    db,
+    payload.student_id,
+    payload.mission_id,
+    payload.context,
+    correct,
+    payload.hints_used,
+    q.get('difficulty', 1),
+)
         db.execute(
             'INSERT INTO attempts(student,mission,context,question_id,correct,'
             'hints_used,time_taken) VALUES(?,?,?,?,?,?,?)',
