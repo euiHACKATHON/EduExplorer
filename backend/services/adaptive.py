@@ -4,6 +4,13 @@ OWNER: Person 2 (Adaptive Learning).
 Deliberately simple additive rule-based scoring per the "start simple" MVP
 guidance. Swap for BKT / knowledge tracing / IRT later without touching the
 API shape: keep `update_mastery` returning (xp, score).
+
+`next_challenge` is the stub Person 2 fills in next -- this is the single
+most important unfinished piece of the MVP (design doc success criterion
+#6: "the next challenge changes according to the student's demonstrated
+understanding"). Nothing else calls this yet; once it's implemented, tell
+the backend engineer and a GET /student/{id}/next-challenge route gets
+added to wire it in.
 """
 from ..config import TRANSFER_GAP_THRESHOLD
 
@@ -72,9 +79,15 @@ def build_progress(rows) -> dict:
 
 
 def next_challenge(db, student_id: str) -> dict:
-    """What should this student attempt next? Person 2 implements.
+    """What should this student attempt next?
 
-    Expected shape:
-      {'mission_id': str, 'context': str, 'difficulty': int, 'reason': str}
+    Expected shape: {'mission_id': str, 'context': str, 'difficulty': int,
+                     'reason': str}
+
+    Starting point: read this student's mastery rows (same query as
+    build_progress), pick the lowest-scoring (mission, context) pair they
+    haven't mastered yet, and default to 'numerical' context for anything
+    they haven't attempted at all. Rule-based is fine for a first pass --
+    same "start simple" guidance as update_mastery above.
     """
     raise NotImplementedError('Person 2: adaptive challenge selection')

@@ -13,8 +13,6 @@ router = APIRouter(tags=['assessment'])
 
 @router.post('/assessment')
 def assess(payload: Assessment, current_student: str = Depends(get_current_student)):
-    # student_id is in the body here, not the path, so require_self's path-
-    # param matching doesn't apply -- check ownership by hand instead.
     if payload.student_id != current_student:
         raise HTTPException(403, "Cannot submit an assessment for another student")
     q = curriculum.challenge(payload.mission_id, payload.context)

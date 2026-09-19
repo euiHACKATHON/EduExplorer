@@ -40,8 +40,8 @@ TRANSFER_GAP_THRESHOLD = 0.35
 # --- auth ------------------------------------------------------------------
 # Lightweight HMAC-signed tokens for the classroom prototype (see
 # services/auth.py) -- not a spec-compliant JWT library. Swap for
-# python-jose/PyJWT before public hosting, same flag as the module docstring
-# in main.py.
+# python-jose/PyJWT before public hosting, same flag as elsewhere in this
+# codebase.
 AUTH_SECRET = os.getenv('AUTH_SECRET', '')
 if not AUTH_SECRET:
     AUTH_SECRET = 'dev-only-insecure-secret-change-me'
@@ -52,6 +52,13 @@ if not AUTH_SECRET:
     )
 
 TOKEN_TTL_SECONDS = int(os.getenv('TOKEN_TTL_SECONDS', str(60 * 60 * 12)))  # 12h
+
+# --- rate limiting ---------------------------------------------------------
+# Applies to /ai/* only -- these are the routes that cost real money per
+# call. Per-key fixed window; see services/rate_limit.py for the "key" the
+# limit is tracked against.
+AI_RATE_LIMIT = int(os.getenv('AI_RATE_LIMIT', '20'))
+AI_RATE_LIMIT_WINDOW_SECONDS = int(os.getenv('AI_RATE_LIMIT_WINDOW_SECONDS', str(60 * 60)))  # 1h
 
 
 def groq_key() -> str:

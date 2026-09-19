@@ -143,3 +143,16 @@ def test_mission_lock_state():
     # Can't see another student's mission list.
     other=auth_header('cadet-6')
     assert client.get('/students/cadet-5/missions',headers=other).status_code==403
+
+
+def test_ai_rate_limit(monkeypatch):
+    import backend.services.rate_limit as rl
+    rl._hits.clear()
+    monkeypatch.setattr(rl, 'AI_RATE_LIMIT', 2)
+    try:
+        for _ in range(2):
+            assert client.post('/ai/explain',json={'mission_id':'M002'}).status_code==200
+        r=client.post('/ai/explain',json={'mission_id':'M002'})
+        assert r.status_code==429
+    finally:
+        rl._hits.clear()  # don't let this test's counter bleed into later ones
