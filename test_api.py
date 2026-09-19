@@ -156,3 +156,25 @@ def test_ai_rate_limit(monkeypatch):
         assert r.status_code==429
     finally:
         rl._hits.clear()  # don't let this test's counter bleed into later ones
+
+
+def test_game_progress_level_and_badges():
+    h=auth_header('cadet-7')
+    # No attempts yet: level 1, no badges.
+    gp=client.get('/students/cadet-7/game-progress',headers=h).json()
+    assert gp['xp']==0 and gp['level']==1 and gp['badges']==[]
+
+    # Correct answer with no hints -> first_mission_complete + no_hints_win.
+    p=dict(student_id='cadet-7',mission_id='M001',question_id='Q001',answer='C',time_taken=10,hints_used=0)
+    assert client.post('/assessment',json=p,headers=h).json()['correct'] is True
+
+    gp=client.get('/students/cadet-7/game-progress',headers=h).json()
+    assert gp['xp']==100  # 100 - 15*0 hints
+    assert gp['level']==1  # 100 xp < 200 xp/level threshold
+    assert 'first_mission_complete' in gp['badges']
+    assert 'no_hints_win' in gp['badges']
+    assert 'transfer_master' not in gp['badges']
+
+    # Can't see another student's game progress.
+    other=auth_header('cadet-8')
+    assert client.get('/students/cadet-7/game-progress',headers=other).status_code==403

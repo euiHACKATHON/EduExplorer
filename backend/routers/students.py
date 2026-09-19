@@ -1,4 +1,5 @@
-"""Student progress and mission list.  OWNER: backend engineer.
+"""Student progress, game progression, and mission list.  OWNER: backend
+engineer.
 
 Registration/login live in routers/auth.py -- this file is just the data a
 student (and only that student) can read about themselves.
@@ -8,7 +9,7 @@ from fastapi import APIRouter, Depends
 from ..config import KNOWN_MISSIONS
 from ..database import connect
 from ..deps import require_self
-from ..services import adaptive, curriculum
+from ..services import adaptive, curriculum, progression
 
 router = APIRouter(tags=['students'])
 
@@ -21,6 +22,28 @@ def progress(student_id: str, _current: str = Depends(require_self)):
             (student_id,),
         ).fetchall()
     return adaptive.build_progress(rows)
+
+
+@router.get('/students/{student_id}/game-progress')
+def game_progress(student_id: str, _current: str = Depends(require_self)):
+    """Level + badges, on top of the raw xp/mastery in /progress. Split into
+    its own endpoint rather than folded into /progress so existing
+    consumers of /progress don't need to change shape."""
+    with connect() as db:
+        mastery_rows = db.execute(
+            'SELECT mission,context,xp,score FROM mastery WHERE student=?',
+            (student_id,),
+        ).fetchall()
+        attempt_rows = db.execute(
+            'SELECT mission,context,correct,hints_used FROM attempts WHERE student=?',
+            (student_id,),
+        ).fetchall()
+    total_xp = sum(row[2] for row in mastery_rows)
+    return {
+        'xp': total_xp,
+        'level': progression.level_for_xp(total_xp),
+        'badges': progression.compute_badges(mastery_rows, attempt_rows),
+    }
 
 
 @router.get('/students/{student_id}/missions')
