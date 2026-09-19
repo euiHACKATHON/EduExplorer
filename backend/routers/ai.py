@@ -1,9 +1,10 @@
-"""Thin wrappers over the GenAI service.  ROUTER: backend engineer.
-LOGIC: Person 1, in services/ai_agents.py.
+"""Thin wrappers over the GenAI agent system.  ROUTER: backend engineer.
+LOGIC: Person 1, in services/ai_agents.py + agents/.
 """
 from fastapi import APIRouter, HTTPException
 
-from ..schemas import Hint, Mission
+from ..config import MISSION_NPCS
+from ..schemas import AskTutor, Hint, Mission, ScenarioRequest
 from ..services import ai_agents, curriculum
 
 router = APIRouter(prefix='/ai', tags=['ai'])
@@ -11,39 +12,44 @@ router = APIRouter(prefix='/ai', tags=['ai'])
 
 @router.get('/dialogue')
 async def dialogue(npc_id: str, student_id: str = ''):
-    data = curriculum.npc_dialogue(npc_id)
-    q = curriculum.challenge(data['options'][0]['payload'])
-    data['message'], data['source'] = await ai_agents.generate(
-        'Introduce yourself as the provided crewmate. Give a short mission '
-        'briefing without revealing the answer.',
-        {'name': data['npc_name'], 'context': q['context'], 'lesson': q['lesson']},
-        data['message'],
-    )
-    return data
+    dialogue_data = curriculum.npc_dialogue(npc_id)
+    raw_challenge = curriculum.challenge(dialogue_data['options'][0]['payload'])
+    return await ai_agents.npc_dialogue(npc_id, student_id, raw_challenge, dialogue_data)
 
 
 @router.post('/hint')
 async def hint(payload: Hint):
-    q = curriculum.challenge(payload.mission_id)
-    if q['question_id'] != payload.question_id:
+    raw_challenge = curriculum.challenge(payload.mission_id)
+    if raw_challenge['question_id'] != payload.question_id:
         raise HTTPException(400, 'Question does not match mission')
-    authored = q['hints'][payload.level - 1]
-    text, source = await ai_agents.generate(
-        'Give one scaffolded hint. Do not state the final answer or an option '
-        'letter. Rephrase the supplied hint with a useful analogy if appropriate.',
-        {'question': q['question'], 'hint': authored, 'level': payload.level},
-        authored,
+    return await ai_agents.hint(
+        payload.mission_id, payload.question_id, payload.student_id, payload.level, raw_challenge,
     )
-    return {'hint': text, 'source': source}
 
 
 @router.post('/explain')
 async def explain(payload: Mission):
-    q = curriculum.challenge(payload.mission_id)
-    message, source = await ai_agents.generate(
-        'Explain this science concept using a Mars analogy. Preserve the '
-        'scientific meaning.',
-        {'lesson': q['lesson']},
-        q['lesson'],
+    raw_challenge = curriculum.challenge(payload.mission_id)
+    return await ai_agents.explain(payload.mission_id, raw_challenge)
+
+
+@router.post('/tutor')
+async def tutor(payload: Mission):
+    """Additive alias for teammates following the agent implementation plan."""
+    raw_challenge = curriculum.challenge(payload.mission_id)
+    return await ai_agents.explain(payload.mission_id, raw_challenge)
+
+
+@router.post('/ask')
+async def ask(payload: AskTutor):
+    raw_challenge = curriculum.challenge(payload.mission_id)
+    return await ai_agents.ask(payload.mission_id, payload.student_id, payload.message, raw_challenge)
+
+
+@router.post('/generate-scenario')
+async def generate_scenario(payload: ScenarioRequest):
+    raw_challenge = curriculum.challenge(payload.mission_id)
+    npc_id = payload.npc_id or MISSION_NPCS[payload.mission_id]
+    return await ai_agents.generate_scenario(
+        payload.mission_id, payload.student_id, npc_id, payload.difficulty, raw_challenge,
     )
-    return {'message': message, 'source': source}

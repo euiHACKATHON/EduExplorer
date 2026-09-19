@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 ContextType = Literal['numerical', 'real_world', 'transfer']
 MissionId = Literal['M001', 'M002', 'M003']
+NpcId = Literal['scientist_01', 'engineer_01', 'botanist_01']
 
 
 class StudentRegister(BaseModel):
@@ -37,6 +38,17 @@ class Hint(Mission):
     question_id: str = Field(max_length=20)
     student_id: str = Field(max_length=100)
     level: int = Field(ge=1, le=3)
+
+
+class AskTutor(Mission):
+    student_id: str = Field(min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9_-]+$')
+    message: str = Field(min_length=2, max_length=500)
+
+
+class ScenarioRequest(Mission):
+    student_id: str = Field(default='anonymous', max_length=100)
+    npc_id: Optional[NpcId] = None
+    difficulty: int = Field(default=2, ge=1, le=3)
 
 
 class Assessment(Mission):

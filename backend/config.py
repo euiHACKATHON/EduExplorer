@@ -28,6 +28,10 @@ ALLOWED_ORIGINS = [
 # --- content -------------------------------------------------------------
 KNOWN_MISSIONS = ('M001', 'M002', 'M003')
 KNOWN_NPCS = ('scientist_01', 'engineer_01', 'botanist_01')
+# Default crewmate assigned to each mission when a scenario request doesn't
+# name one explicitly. Positional pairing with KNOWN_MISSIONS/KNOWN_NPCS --
+# keep both tuples in sync if either grows.
+MISSION_NPCS = dict(zip(KNOWN_MISSIONS, KNOWN_NPCS))
 
 # --- adaptive learning ---------------------------------------------------
 # Score delta across contexts that flags a possible "fake mastery" gap.
@@ -50,10 +54,12 @@ if not AUTH_SECRET:
 TOKEN_TTL_SECONDS = int(os.getenv('TOKEN_TTL_SECONDS', str(60 * 60 * 12)))  # 12h
 
 
-def openai_key() -> str:
-    """Read lazily: tests flip this at runtime via monkeypatch.setenv."""
-    return os.getenv('OPENAI_API_KEY', '')
+def groq_key() -> str:
+    """Read lazily: tests flip this at runtime via monkeypatch.setenv.
 
-
-def openai_model() -> str:
-    return os.getenv('OPENAI_MODEL', 'gpt-4.1-mini')
+    The agent stack (backend/agents/) reads GROQ_API_KEY directly via
+    os.getenv rather than through this module -- that's Person 1's code and
+    out of scope for this refactor. This helper exists so main.py's health
+    check doesn't need its own os.getenv call.
+    """
+    return os.getenv('GROQ_API_KEY', '')

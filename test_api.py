@@ -45,28 +45,19 @@ def test_ai_fallback():
     result=client.post('/ai/hint',json=dict(mission_id='M002',question_id='Q002',student_id='test',level=2)).json()
     assert result['source']=='authored-fallback' and '200' in result['hint']
 
-def test_generated_content_and_provider_failure(monkeypatch):
-    from types import SimpleNamespace
-    import backend.services.ai_agents as module
-    monkeypatch.setenv('OPENAI_API_KEY','test-placeholder')
-    captured={}
-    class FakeClient:
-        def __init__(self,**kwargs): self.responses=self
-        async def __aenter__(self): return self
-        async def __aexit__(self,*args): pass
-        async def create(self,**kwargs):
-            captured.update(kwargs)
-            return SimpleNamespace(output_text='Think of power as the speed of filling an energy tank.')
-    monkeypatch.setattr(module,'AsyncOpenAI',FakeClient)
+def test_explain_and_ask_fallback_without_provider_key():
+    # No GROQ_API_KEY set in this test env -> every /ai/* route must degrade
+    # to authored content rather than error. Deeper coverage of the Groq
+    # success/failure paths (mocked LLM calls, answer-leak rejection, multi-
+    # turn history) lives in tests/test_agents.py, which is Person 1's file.
     result=client.post('/ai/explain',json={'mission_id':'M002'}).json()
-    assert result['source']=='ai' and 'energy tank' in result['message']
-    assert captured['store'] is False
-    assert 'student_id' not in captured['input']
-    class FailedClient(FakeClient):
-        async def create(self,**kwargs): raise TimeoutError('provider unavailable')
-    monkeypatch.setattr(module,'AsyncOpenAI',FailedClient)
-    result=client.post('/ai/explain',json={'mission_id':'M002'}).json()
-    assert result['source']=='authored-fallback' and 'watt-hours' in result['message']
+    assert result['source']=='authored-fallback'
+    result=client.post('/ai/tutor',json={'mission_id':'M002'}).json()
+    assert result['source']=='authored-fallback'
+    result=client.post('/ai/ask',json=dict(mission_id='M002',student_id='test',message='What is power?')).json()
+    assert result['source']=='authored-fallback'
+    result=client.post('/ai/generate-scenario',json=dict(mission_id='M001',student_id='test')).json()
+    assert result['source']=='authored-fallback' and result['npc_id']=='scientist_01'
 
 
 def test_student_registration():
