@@ -13,8 +13,6 @@ router = APIRouter(prefix='/student', tags=['predictions'])
 def submit_prediction(
     student_id: str, payload: PredictionCreate, _current: str = Depends(require_self)
 ):
-    """Store the student's prediction before they see the outcome. Resolve it
-    once the experiment reveals the actual result via /predict/resolve."""
     with connect() as db:
         cur = db.execute(
             'INSERT INTO predictions(student,mission,question_id,predicted) '
@@ -43,8 +41,6 @@ def resolve_prediction(
             'UPDATE predictions SET actual=?, matched=? WHERE id=?',
             (payload.actual, int(matched), payload.prediction_id),
         )
-        # A matched prediction is strong evidence of transfer, not just
-        # memorization -- feed it into the TRANSFER context mastery score.
         xp, mastery = adaptive.update_mastery(
             db, student_id, mission, 'transfer', matched, payload.hints_used
         )

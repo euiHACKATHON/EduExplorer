@@ -49,8 +49,6 @@ def init_db() -> None:
             'context TEXT, question_id TEXT, correct INTEGER, hints_used INTEGER, '
             'time_taken REAL, created_at TEXT DEFAULT CURRENT_TIMESTAMP)'
         )
-        # "Predict before you run it": student predicts, the game reveals the
-        # actual outcome, we compare.
         db.execute(
             'CREATE TABLE IF NOT EXISTS predictions ('
             'id INTEGER PRIMARY KEY AUTOINCREMENT, student TEXT, mission TEXT, '

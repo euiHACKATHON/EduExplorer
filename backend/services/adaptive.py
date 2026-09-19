@@ -4,6 +4,13 @@ OWNER: Person 2 (Adaptive Learning).
 Deliberately simple additive rule-based scoring per the "start simple" MVP
 guidance. Swap for BKT / knowledge tracing / IRT later without touching the
 API shape: keep `update_mastery` returning (xp, score).
+
+`next_challenge` is the stub Person 2 fills in next -- this is the single
+most important unfinished piece of the MVP (design doc success criterion
+#6: "the next challenge changes according to the student's demonstrated
+understanding"). Nothing else calls this yet; once it's implemented, tell
+the backend engineer and a GET /student/{id}/next-challenge route gets
+added to wire it in.
 """
 from ..config import TRANSFER_GAP_THRESHOLD
 from .curriculum import challenge

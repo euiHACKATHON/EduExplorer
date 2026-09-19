@@ -16,8 +16,6 @@ def register(payload: StudentRegister):
             'SELECT student_id FROM students WHERE student_id=?', (payload.student_id,)
         ).fetchone()
         if existing:
-            # An account, not a profile -- re-registering the same id is a
-            # conflict now, unlike the old idempotent-upsert /students/register.
             raise HTTPException(409, 'student_id already registered')
         db.execute(
             'INSERT INTO students(student_id,display_name,grade_level,password_hash) '

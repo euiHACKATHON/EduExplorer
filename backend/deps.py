@@ -6,7 +6,9 @@ that also declares a `student_id` parameter receives the same value. That's
 why `require_self` doesn't need `Path(...)` -- FastAPI wires it up because
 the names match.
 """
-from fastapi import Depends, Header, HTTPException
+from typing import Optional
+
+from fastapi import Depends, Header, HTTPException, Request
 
 from .services.auth import decode_token
 
@@ -28,3 +30,14 @@ def require_self(student_id: str, current_student: str = Depends(get_current_stu
     if student_id != current_student:
         raise HTTPException(403, "Cannot access another student's data")
     return current_student
+
+
+def ai_rate_limit_key(student_id: Optional[str], request: Request) -> str:
+    """Key to rate-limit an /ai/* call against: the student if we know who
+    they are, otherwise the caller's IP. Not a `Depends()` -- called
+    directly inside each route since not every /ai/* payload carries a
+    student_id (see routers/ai.py)."""
+    if student_id:
+        return f'student:{student_id}'
+    client = request.client.host if request.client else 'unknown'
+    return f'ip:{client}'
