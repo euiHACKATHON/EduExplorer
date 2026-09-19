@@ -42,8 +42,12 @@ def test_validation_and_private_answer():
 def test_ai_fallback():
     result=client.get('/ai/dialogue?npc_id=scientist_01').json()
     assert result['source']=='authored-fallback' and len(result['options'])==2
-    result=client.post('/ai/hint',json=dict(mission_id='M002',question_id='Q002',student_id='test',level=2)).json()
-    assert result['source']=='authored-fallback' and '200' in result['hint']
+    # /ai/hint no longer trusts the caller's `level` -- adaptive.hint_level()
+    # computes it server-side from the student's recent attempt history, so
+    # a fresh student's explicit request resolves to level 1 regardless of
+    # the payload's `level` field. Level 1 is hints[0].
+    result=client.post('/ai/hint',json=dict(mission_id='M002',question_id='Q002',student_id='ai-fallback-test',level=2)).json()
+    assert result['source']=='authored-fallback' and 'Energy equals power multiplied by time' in result['hint']
 
 def test_explain_and_ask_fallback_without_provider_key():
     # No GROQ_API_KEY set in this test env -> every /ai/* route must degrade
@@ -90,9 +94,12 @@ def test_login_and_ownership():
 def test_per_context_mastery_and_transfer_gap():
     h=auth_header('cadet-3')
     base=dict(student_id='cadet-3',mission_id='M001',question_id='Q001',answer='C',time_taken=20,hints_used=0)
-    # Master the numerical context.
-    r=client.post('/assessment',json={**base,'context':'numerical'},headers=h)
-    assert r.status_code==200 and r.json()['correct'] is True
+    # Mastery is a recency-weighted EMA (see services/adaptive.py), not an
+    # instant flip on one correct answer -- repeat the correct answer until
+    # the numerical context actually crosses the 'mastered' threshold.
+    for _ in range(8):
+        r=client.post('/assessment',json={**base,'context':'numerical'},headers=h)
+        assert r.status_code==200 and r.json()['correct'] is True
     # Fail the transfer context on the same objective/mission.
     r=client.post('/assessment',json={**base,'context':'transfer','answer':'A'},headers=h)
     assert r.status_code==200 and r.json()['correct'] is False
@@ -114,6 +121,15 @@ def test_prediction_mechanic():
 
     r=client.post('/student/cadet-4/predict/resolve',json=dict(prediction_id=prediction_id,actual='force increases'),headers=h)
     assert r.status_code==200 and r.json()['matched'] is True
+
+    # A single correct prediction only nudges the EMA-based mastery score
+    # (see services/adaptive.py); repeat the mechanic until transfer mastery
+    # actually crosses into 'developing'.
+    for _ in range(3):
+        r=client.post('/student/cadet-4/predict',json=dict(mission_id='M001',question_id='Q001',predicted='force increases'),headers=h)
+        pid=r.json()['prediction_id']
+        r=client.post('/student/cadet-4/predict/resolve',json=dict(prediction_id=pid,actual='force increases'),headers=h)
+        assert r.status_code==200 and r.json()['matched'] is True
 
     progress=client.get('/students/cadet-4/progress',headers=h).json()
     assert progress['mastery']['M001']['transfer']['level'] in ('mastered','developing')

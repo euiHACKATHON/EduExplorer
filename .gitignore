@@ -13,3 +13,6 @@ test-results/
 !.env.example
 *.sqlite3-*
 *.log
+
+# RAG upload cache (created at runtime)
+backend/services/rag/data/uploads.json

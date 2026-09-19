@@ -1,0 +1,8 @@
+# Optional extras for Person 3's curriculum module. The module works WITHOUT these
+# (keyword search + text/markdown uploads); they add:
+#   pypdf                  reading PDF curriculum uploads
+#   sentence-transformers  semantic search (understands paraphrased questions).
+#                          Pulls in PyTorch, so it is large. Local use only:
+#                          do NOT add it to requirements-lock.txt / the Docker image.
+pypdf>=4
+sentence-transformers>=3

@@ -1,0 +1,741 @@
+{
+  "curriculum_id": "physics-grade9-egypt",
+  "title": "Grade 9 Physics (Egypt): starter curriculum",
+  "subject": "Physics",
+  "grade": 9,
+  "note": "STARTER content written for the prototype, based on public outlines of Egypt's Grade 9 (third preparatory) science course. It is NOT the official textbook. Each topic has a status: \"core\" (found in outlines), \"supporting\" (prerequisite we added) or \"unconfirmed\" (not verified for Egypt). Replace or extend it with the official curriculum before real classroom use.",
+  "sources": [
+    "Unofficial public outline of the Egypt Grade 9 Term 1 science book: Unit 1 Forces and Motion (motion in one direction, speed, scalar and vector quantities), Unit 2 Light Energy (mirrors and lenses).",
+    "Teacher exam material for Egypt Grade 9 science (velocity, acceleration and displacement questions)."
+  ],
+  "units": [
+    {
+      "id": "U1",
+      "title": "Forces and Motion"
+    },
+    {
+      "id": "U2",
+      "title": "Light Energy: Mirrors and Lenses"
+    },
+    {
+      "id": "U3",
+      "title": "Work, Energy and Power"
+    }
+  ],
+  "topics": [
+    {
+      "id": "scalar-vector",
+      "unit": "U1",
+      "title": "Scalar and Vector Quantities",
+      "difficulty": 1,
+      "status": "core",
+      "source_note": "Listed in public outlines of the Grade 9 Term 1 unit \"Forces and Motion\".",
+      "prerequisites": [],
+      "mission_ids": [],
+      "objectives": [
+        "Distinguish scalar quantities (magnitude only) from vector quantities (magnitude and direction).",
+        "Classify common physical quantities as scalar or vector.",
+        "Represent a vector with an arrow."
+      ],
+      "concepts": [
+        "Scalar",
+        "Vector",
+        "Magnitude",
+        "Direction"
+      ],
+      "formulas": [],
+      "misconceptions": [
+        "A negative sign means a smaller quantity. The sign only shows that the direction is opposite to the direction chosen as positive."
+      ],
+      "content": [
+        "A scalar quantity is completely described by its magnitude, a number with a unit. Examples: distance, speed, time, mass, temperature and energy.",
+        "A vector quantity needs both magnitude and direction. Examples: displacement, velocity, acceleration and force. A vector is drawn as an arrow: the length shows the magnitude and the arrowhead shows the direction.",
+        "Scalars add like ordinary numbers, but vectors do not. Two walks of 3 m and 4 m give a total distance of 7 m, yet the displacement can be anywhere from 1 m to 7 m depending on the directions. Along a straight line we treat one direction as positive and the opposite direction as negative."
+      ]
+    },
+    {
+      "id": "distance-displacement",
+      "unit": "U1",
+      "title": "Distance and Displacement",
+      "difficulty": 1,
+      "status": "core",
+      "source_note": "Motion in one direction, speed and acceleration appear in public outlines of the Grade 9 Term 1 unit \"Forces and Motion\".",
+      "prerequisites": [
+        "scalar-vector"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "Distinguish between distance (a scalar) and displacement (a vector).",
+        "Calculate the displacement of an object moving along a straight line."
+      ],
+      "concepts": [
+        "Distance",
+        "Displacement",
+        "Scalar",
+        "Vector",
+        "Reference point"
+      ],
+      "formulas": [],
+      "misconceptions": [
+        "Displacement is always equal to the distance travelled. It is only equal when the object moves in a straight line without changing direction."
+      ],
+      "content": [
+        "Distance is the total length of the path an object travels. It is a scalar quantity: it has a size but no direction. It is measured in metres (m) and can never be negative.",
+        "Displacement is the straight-line change in position from the start point to the end point, together with its direction. It is a vector quantity. If a rover drives 3 km east and then 3 km west, the distance travelled is 6 km but the displacement is zero because it ends where it started.",
+        "To describe position we always need a reference point. Choosing east as the positive direction means a movement west has a negative displacement."
+      ]
+    },
+    {
+      "id": "speed-velocity",
+      "unit": "U1",
+      "title": "Speed and Velocity",
+      "difficulty": 1,
+      "status": "core",
+      "source_note": "Motion in one direction, speed and acceleration appear in public outlines of the Grade 9 Term 1 unit \"Forces and Motion\".",
+      "prerequisites": [
+        "distance-displacement"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "Calculate average speed from distance and time.",
+        "Explain the difference between speed and velocity.",
+        "Convert between km/h and m/s."
+      ],
+      "concepts": [
+        "Speed",
+        "Velocity",
+        "Average speed",
+        "Time"
+      ],
+      "formulas": [
+        "speed = distance / time",
+        "velocity = displacement / time",
+        "1 m/s = 3.6 km/h"
+      ],
+      "misconceptions": [
+        "Speed and velocity mean the same thing. Velocity includes direction, so an object moving around a circle at constant speed has a changing velocity."
+      ],
+      "content": [
+        "Average speed is the total distance travelled divided by the total time taken: speed = distance / time. The SI unit is metres per second (m/s). A vehicle that covers 120 m in 10 s has an average speed of 12 m/s. The speed is uniform (constant) if equal distances are covered in equal times.",
+        "Velocity is speed in a given direction, calculated as displacement divided by time. Two objects can have the same speed but different velocities if they move in different directions. If an object returns to its starting point, its displacement, and so its average velocity, is zero even though its average speed is not.",
+        "To convert from m/s to km/h multiply by 3.6. To convert from km/h to m/s divide by 3.6."
+      ]
+    },
+    {
+      "id": "acceleration",
+      "unit": "U1",
+      "title": "Acceleration",
+      "difficulty": 2,
+      "status": "core",
+      "source_note": "Motion in one direction, speed and acceleration appear in public outlines of the Grade 9 Term 1 unit \"Forces and Motion\".",
+      "prerequisites": [
+        "speed-velocity"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "Define acceleration as the rate of change of velocity.",
+        "Calculate acceleration from initial velocity, final velocity and time.",
+        "Explain why slowing down is also an acceleration."
+      ],
+      "concepts": [
+        "Acceleration",
+        "Deceleration",
+        "Change in velocity",
+        "m/s²"
+      ],
+      "formulas": [
+        "a = (v - u) / t"
+      ],
+      "misconceptions": [
+        "Acceleration only means speeding up. Any change in velocity, including slowing down or changing direction, is an acceleration.",
+        "A large velocity means a large acceleration. An object moving at constant velocity has zero acceleration, however fast it is going."
+      ],
+      "content": [
+        "Acceleration is the rate at which velocity changes: a = (v - u) / t, where u is the initial velocity, v is the final velocity and t is the time taken. Its unit is metres per second squared (m/s²).",
+        "An acceleration of 3 m/s² means the velocity increases by 3 m/s every second. If an object slows down, its acceleration points opposite to its motion, so the value is negative (sometimes called deceleration).",
+        "An object moving at a steady velocity has zero acceleration. Acceleration depends on how quickly the velocity changes, not on how large the velocity is.",
+        "Worked example: a car speeds up from rest to 15 m/s in 3 s. Its acceleration is a = (15 - 0) / 3 = 5 m/s², which means its speed rises by 5 m/s every second."
+      ]
+    },
+    {
+      "id": "motion-graphs",
+      "unit": "U1",
+      "title": "Motion Graphs",
+      "difficulty": 2,
+      "status": "unconfirmed",
+      "source_note": "Not found in the Grade 9 Term 1 outline. Verify against the textbook.",
+      "prerequisites": [
+        "speed-velocity",
+        "acceleration"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "Interpret distance-time graphs and find speed from the gradient.",
+        "Interpret velocity-time graphs and find acceleration from the gradient and distance from the area."
+      ],
+      "concepts": [
+        "Gradient",
+        "Distance-time graph",
+        "Velocity-time graph",
+        "Area under graph"
+      ],
+      "formulas": [
+        "speed = gradient of distance-time graph",
+        "acceleration = gradient of velocity-time graph",
+        "distance = area under velocity-time graph"
+      ],
+      "misconceptions": [
+        "A horizontal line on a distance-time graph means constant speed. It actually means the object is stationary; constant speed is a straight sloped line.",
+        "A graph is a picture of the path the object takes. It shows how a quantity changes with time, not the physical route."
+      ],
+      "content": [
+        "On a distance-time graph the gradient (steepness) equals the speed. A horizontal line means the object is at rest. A steeper line means faster motion. A curved line means the speed is changing.",
+        "On a velocity-time graph the gradient equals the acceleration. A horizontal line means constant velocity and therefore zero acceleration. The area between the line and the time axis equals the distance travelled."
+      ]
+    },
+    {
+      "id": "force-basics",
+      "unit": "U1",
+      "title": "What Is a Force? Net Force",
+      "difficulty": 1,
+      "status": "unconfirmed",
+      "source_note": "The unit is called \"Forces and Motion\", so some force content is likely, but no lesson list was found. Verify against the textbook.",
+      "prerequisites": [],
+      "mission_ids": [],
+      "objectives": [
+        "Describe a force as a push or pull measured in newtons.",
+        "Calculate the net (resultant) force when forces act along the same line.",
+        "Explain the difference between balanced and unbalanced forces."
+      ],
+      "concepts": [
+        "Force",
+        "Newton",
+        "Net force",
+        "Balanced forces",
+        "Unbalanced forces"
+      ],
+      "formulas": [
+        "net force = sum of forces (with direction)"
+      ],
+      "misconceptions": [
+        "An object moving needs a force to keep it moving. A force is only needed to change the motion, not to maintain constant velocity.",
+        "Only living things or moving things can exert forces. A table pushes up on a book resting on it."
+      ],
+      "content": [
+        "A force is a push or a pull that one object exerts on another. It is a vector, measured in newtons (N). One newton is the force that gives a 1 kg mass an acceleration of 1 m/s².",
+        "The net force is the single force that has the same effect as all the forces acting on an object combined. Forces in the same direction add together. Forces in opposite directions are subtracted, and the net force points in the direction of the larger one.",
+        "When the forces on an object are balanced the net force is zero and the motion does not change. When the forces are unbalanced there is a non-zero net force and the object accelerates."
+      ]
+    },
+    {
+      "id": "friction",
+      "unit": "U1",
+      "title": "Friction and Resistive Forces",
+      "difficulty": 2,
+      "status": "unconfirmed",
+      "source_note": "The unit is called \"Forces and Motion\", so some force content is likely, but no lesson list was found. Verify against the textbook.",
+      "prerequisites": [
+        "force-basics"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "Explain how friction opposes motion between surfaces.",
+        "Describe factors that affect friction.",
+        "Include friction when working out the net force on an object."
+      ],
+      "concepts": [
+        "Friction",
+        "Resistive force",
+        "Surface roughness",
+        "Air resistance"
+      ],
+      "formulas": [
+        "net force = driving force - friction"
+      ],
+      "misconceptions": [
+        "Friction is always a nuisance. Without friction we could not walk, and wheels could not grip the ground."
+      ],
+      "content": [
+        "Friction is a force that acts between two surfaces in contact and opposes the motion, or attempted motion, of one surface over the other. It acts in the direction opposite to the motion.",
+        "Rougher surfaces and larger pressing forces produce more friction. Lubricants such as oil reduce friction. Air resistance is a similar resistive force for objects moving through a gas.",
+        "When you calculate the net force on a pushed object, subtract the friction from the driving force. If the driving force is larger than friction, the object accelerates. If they are equal the object moves at constant velocity."
+      ]
+    },
+    {
+      "id": "mass-weight",
+      "unit": "U1",
+      "title": "Mass, Weight and Gravity",
+      "difficulty": 2,
+      "status": "unconfirmed",
+      "source_note": "The unit is called \"Forces and Motion\", so some force content is likely, but no lesson list was found. Verify against the textbook.",
+      "prerequisites": [
+        "force-basics"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "Distinguish between mass and weight.",
+        "Calculate weight from mass and gravitational field strength.",
+        "Compare weight on different planets."
+      ],
+      "concepts": [
+        "Mass",
+        "Weight",
+        "Gravitational field strength",
+        "Gravity"
+      ],
+      "formulas": [
+        "W = m × g",
+        "g = 9.8 N/kg on Earth (about 3.7 N/kg on Mars)"
+      ],
+      "misconceptions": [
+        "Mass and weight are the same thing. Mass is the amount of matter and stays the same everywhere; weight is a force that depends on the local gravity.",
+        "Astronauts in orbit have no weight because there is no gravity. Gravity is still strong there; they are in free fall."
+      ],
+      "content": [
+        "Mass is the amount of matter in an object. It is measured in kilograms (kg) and does not change with location. Weight is the gravitational force acting on the mass. It is a force, measured in newtons (N).",
+        "Weight is calculated with W = m × g, where g is the gravitational field strength. On Earth g is about 9.8 N/kg. On Mars g is about 3.7 N/kg, so a 60 kg explorer weighs roughly 588 N on Earth but only about 222 N on Mars, even though the mass is 60 kg in both places."
+      ]
+    },
+    {
+      "id": "newton-first",
+      "unit": "U1",
+      "title": "Newton's First Law (Inertia)",
+      "difficulty": 2,
+      "status": "unconfirmed",
+      "source_note": "The unit is called \"Forces and Motion\", so some force content is likely, but no lesson list was found. Verify against the textbook.",
+      "prerequisites": [
+        "force-basics",
+        "friction"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "State Newton's first law of motion.",
+        "Explain inertia and why more massive objects are harder to accelerate.",
+        "Explain seat belts and similar examples using inertia."
+      ],
+      "concepts": [
+        "Inertia",
+        "Balanced forces",
+        "Constant velocity",
+        "Rest"
+      ],
+      "formulas": [],
+      "misconceptions": [
+        "Objects naturally slow down and stop. They slow down because friction or air resistance acts on them; with no net force they keep moving at constant velocity."
+      ],
+      "content": [
+        "Newton's first law states that an object stays at rest, or continues to move at constant velocity in a straight line, unless a resultant (net) force acts on it.",
+        "Inertia is the tendency of an object to resist changes in its motion. The greater the mass of an object, the greater its inertia. This is why a loaded truck is harder to start and harder to stop than an empty one.",
+        "When a car stops suddenly, passengers keep moving forward because of their inertia. A seat belt provides the force that changes their motion safely."
+      ]
+    },
+    {
+      "id": "newton-second",
+      "unit": "U1",
+      "title": "Newton's Second Law (F = ma)",
+      "difficulty": 2,
+      "status": "unconfirmed",
+      "source_note": "The unit is called \"Forces and Motion\", so some force content is likely, but no lesson list was found. Verify against the textbook.",
+      "prerequisites": [
+        "acceleration",
+        "force-basics",
+        "mass-weight"
+      ],
+      "mission_ids": [
+        "M001"
+      ],
+      "objectives": [
+        "State Newton's second law: acceleration is proportional to net force and inversely proportional to mass.",
+        "Use F = m × a to calculate net force, mass or acceleration.",
+        "Predict how changing the force or the mass changes the acceleration.",
+        "Apply the law when friction or other opposing forces are present."
+      ],
+      "concepts": [
+        "Net force",
+        "Mass",
+        "Acceleration",
+        "F = ma",
+        "Proportionality"
+      ],
+      "formulas": [
+        "F = m × a",
+        "a = F / m",
+        "m = F / a",
+        "1 N = 1 kg·m/s²"
+      ],
+      "misconceptions": [
+        "A heavier object accelerates more. For the same force, a larger mass gives a smaller acceleration.",
+        "The force in F = ma is any force on the object. It is the net (resultant) force.",
+        "A moving object must have a net force in its direction of motion. The net force is in the direction of the acceleration."
+      ],
+      "content": [
+        "Newton's second law links net force, mass and acceleration: F = m × a. The net force F is measured in newtons (N), the mass m in kilograms (kg) and the acceleration a in metres per second squared (m/s²). The acceleration is always in the same direction as the net force.",
+        "The law can be rearranged: a = F / m and m = F / a. If the net force is doubled and the mass stays the same, the acceleration doubles. If the mass is doubled and the net force stays the same, the acceleration is halved. This is why a heavily loaded vehicle accelerates more slowly than an empty one when the engine pushes with the same force.",
+        "Worked example: a 20 kg cart is pushed with a net force of 50 N. Its acceleration is a = F / m = 50 / 20 = 2.5 m/s². To find the net force needed to give a 30 kg cart an acceleration of 3 m/s², use F = m × a and multiply the two numbers.",
+        "Remember that F means the net force. If a driving force of 80 N acts on an object and friction of 30 N opposes it, the net force is 50 N, and that is the value to use in F = m × a."
+      ]
+    },
+    {
+      "id": "newton-third",
+      "unit": "U1",
+      "title": "Newton's Third Law (Action and Reaction)",
+      "difficulty": 3,
+      "status": "unconfirmed",
+      "source_note": "The unit is called \"Forces and Motion\", so some force content is likely, but no lesson list was found. Verify against the textbook.",
+      "prerequisites": [
+        "newton-first",
+        "newton-second"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "State Newton's third law.",
+        "Identify action-reaction force pairs and explain why they do not cancel."
+      ],
+      "concepts": [
+        "Action force",
+        "Reaction force",
+        "Force pair",
+        "Interaction"
+      ],
+      "formulas": [],
+      "misconceptions": [
+        "Action and reaction forces cancel each other. They act on different objects, so they cannot cancel.",
+        "The bigger object exerts a bigger force in a collision. The two forces are always equal in size and opposite in direction."
+      ],
+      "content": [
+        "Newton's third law states that when object A exerts a force on object B, object B exerts an equal force on object A in the opposite direction. Forces always come in interaction pairs.",
+        "The two forces in a pair act on different objects, so they never cancel each other out. When a rocket pushes gas backwards, the gas pushes the rocket forwards with an equal force. This is how a rocket accelerates in the vacuum of space.",
+        "When you push a wall, the wall pushes back on you with the same size force. The effect of each force depends on the mass of the object it acts on, which is why the accelerations can be very different."
+      ]
+    },
+    {
+      "id": "light-reflection",
+      "unit": "U2",
+      "title": "Reflection of Light",
+      "difficulty": 1,
+      "status": "core",
+      "source_note": "Light energy (mirrors and lenses) is Unit 2 in public outlines of the Grade 9 Term 1 book. The lesson breakdown was not verified.",
+      "prerequisites": [],
+      "mission_ids": [],
+      "objectives": [
+        "Describe how light travels in straight lines and is reflected from a surface.",
+        "State the two laws of reflection.",
+        "Distinguish regular reflection from diffuse reflection."
+      ],
+      "concepts": [
+        "Ray of light",
+        "Incident ray",
+        "Reflected ray",
+        "Normal",
+        "Angle of incidence",
+        "Angle of reflection"
+      ],
+      "formulas": [
+        "angle of incidence = angle of reflection"
+      ],
+      "misconceptions": [
+        "The angle of incidence is measured from the surface. It is measured from the normal, the line at right angles to the surface.",
+        "Rough surfaces break the law of reflection. Each ray still obeys the law, but the normals point in many directions so the rays scatter."
+      ],
+      "content": [
+        "Light travels in straight lines in a uniform medium. A narrow beam is drawn as a ray with an arrow. When a ray meets a surface it can bounce back: this is reflection. The incoming ray is the incident ray, the bounced ray is the reflected ray, and the normal is the line at right angles to the surface at the point where the ray hits.",
+        "The laws of reflection: (1) the angle of incidence equals the angle of reflection, both measured from the normal; (2) the incident ray, the reflected ray and the normal all lie in the same plane.",
+        "On a smooth polished surface parallel rays reflect as parallel rays (regular reflection), which forms clear images. On a rough surface each ray still obeys the laws, but the normals point in different directions, so the rays scatter (diffuse reflection). This is why we can read a page from any direction but see our face only in a mirror."
+      ]
+    },
+    {
+      "id": "plane-mirrors",
+      "unit": "U2",
+      "title": "Plane Mirrors",
+      "difficulty": 1,
+      "status": "core",
+      "source_note": null,
+      "prerequisites": [
+        "light-reflection"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "Describe the image formed by a plane mirror.",
+        "Locate a plane-mirror image using the laws of reflection.",
+        "Explain lateral inversion."
+      ],
+      "concepts": [
+        "Plane mirror",
+        "Virtual image",
+        "Lateral inversion",
+        "Object distance",
+        "Image distance"
+      ],
+      "formulas": [],
+      "misconceptions": [
+        "The light really comes from behind the mirror. The image is virtual: light only appears to come from behind the mirror, and the image cannot be caught on a screen.",
+        "A plane mirror turns the image upside down. It reverses left and right (lateral inversion), but the image stays upright."
+      ],
+      "content": [
+        "A plane mirror forms an image that is virtual, upright, the same size as the object, and as far behind the mirror as the object is in front of it. Virtual means the reflected rays only appear to come from the image. They do not pass through it, so the image cannot be shown on a screen.",
+        "To locate the image, draw two rays from a point on the object to the mirror, draw the reflected rays using the laws of reflection, then extend the reflected rays backwards (dotted lines) behind the mirror. They meet at the image point.",
+        "A plane mirror reverses left and right, which is called lateral inversion: your raised right hand appears as the left hand of the image. This is why the word AMBULANCE is written reversed on the front of the vehicle, so a driver reading it in a rear-view mirror sees it correctly."
+      ]
+    },
+    {
+      "id": "spherical-mirrors",
+      "unit": "U2",
+      "title": "Spherical Mirrors (Concave and Convex)",
+      "difficulty": 2,
+      "status": "core",
+      "source_note": null,
+      "prerequisites": [
+        "light-reflection"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "Distinguish concave (converging) from convex (diverging) mirrors.",
+        "Define pole, centre of curvature, principal axis, principal focus and focal length.",
+        "Describe the image formed by a concave mirror for different object positions, and the image in a convex mirror.",
+        "Give everyday uses of each type of mirror."
+      ],
+      "concepts": [
+        "Concave mirror",
+        "Convex mirror",
+        "Pole",
+        "Centre of curvature",
+        "Principal focus",
+        "Focal length",
+        "Real image",
+        "Virtual image"
+      ],
+      "formulas": [
+        "f = R / 2"
+      ],
+      "misconceptions": [
+        "A convex mirror can form a real image. It always forms a virtual, upright, smaller image.",
+        "The focus is where the object must be placed. The focus is where rays parallel to the axis meet (concave) or appear to come from (convex) after reflection."
+      ],
+      "content": [
+        "A spherical mirror is part of a hollow sphere. If the reflecting surface is on the inside of the curve the mirror is concave (converging). If it is on the outside the mirror is convex (diverging). The pole P is the centre of the mirror, the centre of curvature C is the centre of the sphere, the radius of curvature R is the distance CP, and the principal axis is the line through C and P.",
+        "Rays parallel to the principal axis meet at the principal focus F of a concave mirror after reflection. For a convex mirror they spread out and appear to come from a focus F behind the mirror. The focal length f is the distance PF, and f = R / 2.",
+        "Images in a concave mirror depend on where the object is. Beyond C: real, inverted and smaller, between F and C. At C: real, inverted, same size, at C. Between C and F: real, inverted and larger, beyond C. At F: no image is formed, because the reflected rays are parallel. Between F and P: virtual, upright and larger, behind the mirror.",
+        "A convex mirror always forms a virtual, upright and smaller image behind the mirror, whatever the object distance. It gives a wide field of view, so it is used as a car wing mirror and for shop security. Concave mirrors are used as shaving or make-up mirrors (the image is larger when the face is inside F), in torches and car headlights (a lamp at F sends out a parallel beam), and by dentists."
+      ]
+    },
+    {
+      "id": "light-refraction",
+      "unit": "U2",
+      "title": "Refraction of Light",
+      "difficulty": 2,
+      "status": "supporting",
+      "source_note": "Added as a prerequisite for lenses. Not confirmed as a separate lesson in the book.",
+      "prerequisites": [],
+      "mission_ids": [],
+      "objectives": [
+        "Explain refraction as the change in direction of light passing from one transparent medium to another.",
+        "Predict whether a ray bends towards or away from the normal.",
+        "Give everyday examples of refraction."
+      ],
+      "concepts": [
+        "Refraction",
+        "Transparent medium",
+        "Normal",
+        "Angle of refraction",
+        "Speed of light in a medium"
+      ],
+      "formulas": [],
+      "misconceptions": [
+        "Light bends because the denser material attracts it. It bends because its speed changes when it enters a different medium at an angle.",
+        "A ray travelling along the normal bends too. It changes speed but not direction."
+      ],
+      "content": [
+        "Refraction is the change in direction of a light ray when it passes at an angle from one transparent medium into another, for example from air into water or glass. It happens because light travels at different speeds in different media: it is slower in glass and water than in air.",
+        "When a ray enters a denser medium (such as air to glass) it bends towards the normal, so the angle of refraction is smaller than the angle of incidence. When it leaves into a less dense medium it bends away from the normal. A ray along the normal passes straight through without bending.",
+        "Refraction explains why a pencil in water looks bent, why a swimming pool looks shallower than it is, and how lenses form images."
+      ]
+    },
+    {
+      "id": "lenses",
+      "unit": "U2",
+      "title": "Lenses (Convex and Concave)",
+      "difficulty": 2,
+      "status": "core",
+      "source_note": null,
+      "prerequisites": [
+        "light-refraction"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "Distinguish convex (converging) lenses from concave (diverging) lenses.",
+        "Define optical centre, principal axis, principal focus and focal length of a lens.",
+        "Describe the image formed by a convex lens for different object positions, and the image in a concave lens."
+      ],
+      "concepts": [
+        "Convex lens",
+        "Concave lens",
+        "Optical centre",
+        "Principal focus",
+        "Focal length",
+        "Real image",
+        "Virtual image"
+      ],
+      "formulas": [],
+      "misconceptions": [
+        "A concave lens can form a real image on a screen. It always gives a virtual, upright, smaller image.",
+        "A lens has only one focus. It has a principal focus on each side, at the same distance from the optical centre."
+      ],
+      "content": [
+        "A convex lens is thicker in the middle than at the edges and converges parallel rays to the principal focus F. A concave lens is thinner in the middle and diverges parallel rays so that they appear to come from a focus on the same side as the incoming light. The optical centre is the centre of the lens, and a ray through it goes straight without bending. The focal length f is the distance from the optical centre to the principal focus.",
+        "Images formed by a convex lens depend on the object distance. Beyond 2F: real, inverted and smaller, between F and 2F on the other side. At 2F: real, inverted, same size, at 2F. Between F and 2F: real, inverted and larger, beyond 2F. At F: no image is formed, because the emerging rays are parallel. Closer than F: virtual, upright and larger, on the same side as the object, which is how a magnifying glass works.",
+        "A concave lens always forms a virtual, upright and smaller image on the same side of the lens as the object, whatever the object distance."
+      ]
+    },
+    {
+      "id": "optical-applications",
+      "unit": "U2",
+      "title": "Applications of Mirrors and Lenses",
+      "difficulty": 2,
+      "status": "core",
+      "source_note": "Applications in daily life are mentioned in the unit outline. The specific examples here (camera, magnifier, eye) are typical ones; check them against the book.",
+      "prerequisites": [
+        "spherical-mirrors",
+        "lenses"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "Explain how a simple camera and a magnifying glass use a convex lens.",
+        "Explain how the eye forms an image and how short sight and long sight are corrected.",
+        "Choose a suitable mirror or lens for a given task."
+      ],
+      "concepts": [
+        "Camera",
+        "Magnifying glass",
+        "Human eye",
+        "Short sight",
+        "Long sight"
+      ],
+      "formulas": [],
+      "misconceptions": [
+        "A camera lens forms an upright image. It forms a real, inverted, smaller image on the film or sensor.",
+        "Short-sighted people need a convex lens. Short sight is corrected with a concave lens and long sight with a convex lens."
+      ],
+      "content": [
+        "A simple camera uses a convex lens to form a real, inverted and smaller image of a distant object on the film or sensor. A magnifying glass is a convex lens held closer to the object than its focal length, giving a virtual, upright and larger image.",
+        "In the eye, the cornea and the lens together act like a convex lens that focuses light on the retina, forming a real, inverted, smaller image that the brain interprets as upright. In short sight (myopia) the image forms in front of the retina, and a concave lens spreads the rays slightly to move it back. In long sight (hypermetropia) the image would form behind the retina, and a convex lens brings the rays together sooner.",
+        "Choosing the right device: use a concave mirror for an enlarged image or a parallel beam, a convex mirror for a wide field of view, a convex lens to magnify or to form a real image, and a concave lens to spread light or to correct short sight."
+      ]
+    },
+    {
+      "id": "work",
+      "unit": "U3",
+      "title": "Work and Energy Transfer",
+      "difficulty": 2,
+      "status": "unconfirmed",
+      "source_note": "Not found in the Grade 9 Term 1 outline. Kept because missions M002 depends on it. Verify against the textbook.",
+      "prerequisites": [
+        "force-basics"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "Define work done as force times distance moved in the direction of the force.",
+        "Calculate work done in joules.",
+        "Explain that work done is energy transferred."
+      ],
+      "concepts": [
+        "Work",
+        "Joule",
+        "Energy transfer",
+        "Force",
+        "Distance"
+      ],
+      "formulas": [
+        "W = F × d",
+        "1 J = 1 N·m"
+      ],
+      "misconceptions": [
+        "Holding a heavy object still is hard work in the physics sense. If nothing moves, no work is done on the object, even though your muscles get tired."
+      ],
+      "content": [
+        "Work is done when a force moves an object through a distance in the direction of the force: W = F × d. Work is measured in joules (J). One joule is the work done by a force of one newton moving an object one metre.",
+        "Work done is a transfer of energy. If a crane does 5,000 J of work lifting a crate, 5,000 J of energy is transferred to the crate as gravitational potential energy.",
+        "No movement in the direction of the force means no work is done. Carrying a bag while walking on level ground involves no work against gravity, because the lifting force is at right angles to the motion."
+      ]
+    },
+    {
+      "id": "kinetic-potential",
+      "unit": "U3",
+      "title": "Kinetic and Potential Energy",
+      "difficulty": 2,
+      "status": "unconfirmed",
+      "source_note": "Not found in the Grade 9 Term 1 outline. Kept because missions M002 depends on it. Verify against the textbook.",
+      "prerequisites": [
+        "work",
+        "mass-weight",
+        "speed-velocity"
+      ],
+      "mission_ids": [],
+      "objectives": [
+        "Calculate kinetic energy and gravitational potential energy.",
+        "State the principle of conservation of energy.",
+        "Describe energy changes for a falling or rising object."
+      ],
+      "concepts": [
+        "Kinetic energy",
+        "Gravitational potential energy",
+        "Conservation of energy",
+        "Energy transformation"
+      ],
+      "formulas": [
+        "KE = 1/2 × m × v²",
+        "GPE = m × g × h"
+      ],
+      "misconceptions": [
+        "Energy is used up. Energy is never destroyed; it is transferred or transformed, and some ends up as thermal energy in the surroundings.",
+        "Doubling the speed doubles the kinetic energy. Kinetic energy depends on the square of the speed, so it becomes four times larger."
+      ],
+      "content": [
+        "Kinetic energy is the energy of a moving object: KE = ½ m v². Because the speed is squared, doubling the speed makes the kinetic energy four times as large.",
+        "Gravitational potential energy is the energy stored in an object because of its height in a gravitational field: GPE = m g h, with h the height above a chosen reference level.",
+        "The principle of conservation of energy states that energy cannot be created or destroyed, only transferred from one store to another. A ball dropped from a height loses potential energy and gains kinetic energy; if friction and air resistance are small the total stays almost constant."
+      ]
+    },
+    {
+      "id": "power-energy",
+      "unit": "U3",
+      "title": "Power and Energy Use",
+      "difficulty": 2,
+      "status": "unconfirmed",
+      "source_note": "Not found in the Grade 9 Term 1 outline. Kept because missions M002 depends on it. Verify against the textbook.",
+      "prerequisites": [
+        "work"
+      ],
+      "mission_ids": [
+        "M002"
+      ],
+      "objectives": [
+        "Define power as the rate of transferring energy.",
+        "Use P = E / t to calculate power, energy or time.",
+        "Calculate electrical energy in watt-hours and kilowatt-hours."
+      ],
+      "concepts": [
+        "Power",
+        "Watt",
+        "Energy",
+        "Time",
+        "Watt-hour",
+        "Kilowatt-hour"
+      ],
+      "formulas": [
+        "P = E / t",
+        "E = P × t",
+        "kWh = Wh ÷ 1000"
+      ],
+      "misconceptions": [
+        "Power and energy are the same thing. Power is how fast energy is transferred; energy is the total amount transferred.",
+        "A watt is a unit of energy. A watt is one joule per second, which is a unit of power."
+      ],
+      "content": [
+        "Power is the rate at which energy is transferred or work is done: P = E / t. The SI unit is the watt (W); 1 W = 1 J/s. A 60 W lamp transfers 60 joules of energy every second.",
+        "Rearranging gives E = P × t. Energy is found by multiplying power by time. If the time is in seconds, the energy is in joules. If the power is in watts and the time is in hours, the energy is in watt-hours (Wh).",
+        "Worked example: a heater rated at 300 W runs for 4 hours. The energy it uses is 300 W × 4 h = 1,200 Wh, which is 1.2 kilowatt-hours (kWh). Electricity is normally sold in kWh: one kilowatt-hour is a thousand watt-hours.",
+        "Watts measure how quickly energy is used, whereas watt-hours measure how much energy has been used in total. A powerful device used for a short time can use less energy than a weak device left on for a long time."
+      ]
+    }
+  ]
+}

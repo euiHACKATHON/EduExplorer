@@ -44,6 +44,22 @@ export function button(text, action, className = "primary") {
   b.onclick = action;
   return b;
 }
+// Labeled text input for simple in-modal forms (e.g. sign-in/sign-up).
+// Returns the wrapping <label>; read/write the value via `wrap.input.value`.
+export function field(labelText, opts = {}) {
+  const wrap = document.createElement("label");
+  wrap.className = "field";
+  const span = document.createElement("span");
+  span.textContent = labelText;
+  const input = document.createElement("input");
+  input.type = opts.type || "text";
+  if (opts.placeholder) input.placeholder = opts.placeholder;
+  if (opts.autocomplete) input.autocomplete = opts.autocomplete;
+  if (opts.maxLength) input.maxLength = opts.maxLength;
+  wrap.append(span, input);
+  wrap.input = input;
+  return wrap;
+}
 export async function pending(b, fn) {
   b.disabled = true;
   try {

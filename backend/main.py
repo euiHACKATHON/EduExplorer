@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import ALLOWED_ORIGINS, groq_key
 from .database import init_db
-from .routers import adaptive, ai, assessment, auth, missions, predictions, students
+from .routers import adaptive, ai, assessment, auth, missions, predictions, rag, students
 from .services.ai_agents import _contains_correct_answer  # noqa: F401  (re-export)
 from .services.curriculum import challenge  # noqa: F401  (re-export)
 
@@ -40,6 +40,7 @@ def create_app() -> FastAPI:
     app.include_router(students.router)
     app.include_router(missions.router)
     app.include_router(ai.router)
+    app.include_router(rag.router)
     app.include_router(assessment.router)
     app.include_router(predictions.router)
     return app

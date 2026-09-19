@@ -183,15 +183,24 @@ export async function openChallenge(id, options = {}) {
         window.dispatchEvent(
           new CustomEvent("mission-complete", { detail: id }),
         );
-        if (options.review && wasCompleted) {
-          showModal("Mistake mastered", "LEARNING JOURNAL");
+        if (wasCompleted) {
+          showModal(
+            options.review ? "Mistake mastered" : "Already mastered",
+            "LEARNING JOURNAL",
+          );
           modal.append(
             paragraph(
-              "You answered this question correctly. It is now marked as mastered in your journal.",
+              options.review
+                ? "You answered this question correctly. It is now marked as mastered in your journal."
+                : "You've already earned XP for this quest, so no new Star XP this time — but nice review!",
               "review-success",
             ),
-            button("Back to the journal", () =>
-              window.dispatchEvent(new Event("open-journal")),
+            button(
+              options.review ? "Back to the journal" : "Continue",
+              () =>
+                options.review
+                  ? window.dispatchEvent(new Event("open-journal"))
+                  : closeModal(),
             ),
           );
         } else showVictory(id, result);

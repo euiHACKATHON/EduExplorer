@@ -26,11 +26,23 @@ export function renderProgress() {
     `${state.data.completed.length} of ${levels.length} levels complete`,
   );
   levels.forEach((item, index) => {
-    const node = document.createElement("span");
     const complete = state.data.completed.includes(item.mission);
-    node.className = `realm-node${complete ? " complete" : ""}${index === activeLevel ? " active" : ""}`;
+    const active = index === activeLevel;
+    const unlocked = state.isMissionUnlocked(item.mission);
+    const canTravel = unlocked && !active;
+    const node = document.createElement(canTravel ? "button" : "span");
+    node.className = `realm-node${complete ? " complete" : ""}${active ? " active" : ""}${canTravel ? " clickable" : ""}`;
     node.textContent = complete ? "✓" : index + 1;
-    node.title = complete ? `${item.title} complete` : item.title;
+    node.title = complete
+      ? `${item.title} complete`
+      : canTravel
+        ? `Travel to ${item.title}`
+        : item.title;
+    if (canTravel) {
+      node.type = "button";
+      node.onclick = () =>
+        window.dispatchEvent(new CustomEvent("enter-level", { detail: index }));
+    }
     path.append(node);
     if (index < levels.length - 1) path.append(document.createElement("i"));
   });

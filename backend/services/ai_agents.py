@@ -26,6 +26,7 @@ from ..agents.schemas import (
     lesson_facts_from_challenge,
 )
 from ..agents.state import new_state
+from . import curriculum
 
 
 def _thread_id(kind: str, student_id: str, identity: str) -> str:
@@ -85,7 +86,10 @@ async def hint(mission_id: str, question_id: str, student_id: str, level: int, r
 async def explain(mission_id: str, raw_challenge: dict) -> dict:
     facts = lesson_facts_from_challenge(raw_challenge)
     fallback = TutorResponse(message=raw_challenge['lesson'], source='authored-fallback')
-    state = new_state('explain', 'anonymous', mission_id=mission_id, lesson_facts=facts)
+    state = new_state(
+        'explain', 'anonymous', mission_id=mission_id, lesson_facts=facts,
+        retrieved_context=curriculum.context_for(mission_id),
+    )
     result = await run_agent(state, _thread_id('explain', 'anonymous', mission_id))
     response = result.get('tutor_result')
     if not isinstance(response, TutorResponse):
@@ -104,6 +108,7 @@ async def ask(mission_id: str, student_id: str, message: str, raw_challenge: dic
     state = new_state(
         'ask', student_id, mission_id=mission_id, question_id=facts.question_id,
         lesson_facts=facts, user_message=message,
+        retrieved_context=curriculum.context_for(mission_id, message),
     )
     result = await run_agent(state, _thread_id('ask', student_id, mission_id))
     response = result.get('tutor_result')
