@@ -120,3 +120,26 @@ def test_prediction_mechanic():
 
     r=client.post('/student/cadet-4/predict/resolve',json=dict(prediction_id=999999,actual='x'),headers=h)
     assert r.status_code==404
+
+
+def test_mission_lock_state():
+    h=auth_header('cadet-5')
+    missions=client.get('/students/cadet-5/missions',headers=h).json()['missions']
+    assert [m['mission_id'] for m in missions]==['M001','M002','M003']
+    # Fresh student: only the first mission is unlocked.
+    assert missions[0]['locked'] is False and missions[0]['completed'] is False
+    assert missions[1]['locked'] is True
+    assert missions[2]['locked'] is True
+
+    # Complete M001.
+    p=dict(student_id='cadet-5',mission_id='M001',question_id='Q001',answer='C',time_taken=10,hints_used=0)
+    assert client.post('/assessment',json=p,headers=h).json()['correct'] is True
+
+    missions=client.get('/students/cadet-5/missions',headers=h).json()['missions']
+    assert missions[0]['completed'] is True
+    assert missions[1]['locked'] is False  # M002 now unlocked
+    assert missions[2]['locked'] is True   # M003 still locked
+
+    # Can't see another student's mission list.
+    other=auth_header('cadet-6')
+    assert client.get('/students/cadet-5/missions',headers=other).status_code==403
