@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { AudioManager } from "./audio/AudioManager.js";
 import "./style.css";
 import { WIDTH, HEIGHT, levels } from "./config.js";
 import { BootScene } from "./scenes/BootScene.js";
@@ -211,6 +212,21 @@ const settingsButton = document.querySelector("#settings-button");
 const showSettings = settingsButton.onclick;
 settingsButton.onclick = () => {
   showSettings();
+  const soundToggle = button(
+    "",
+    () => {
+      AudioManager.setMuted(!AudioManager.muted);
+      updateSoundToggle();
+    },
+    "secondary",
+  );
+  const updateSoundToggle = () => {
+    soundToggle.textContent = AudioManager.muted ? "Sound: off" : "Sound: on";
+    soundToggle.setAttribute("aria-pressed", String(!AudioManager.muted));
+    soundToggle.setAttribute("aria-label", "Expedition sound");
+  };
+  updateSoundToggle();
+  modal.append(soundToggle);
   if (!api.useMock) {
     modal.append(
       button(

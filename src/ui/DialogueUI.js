@@ -1,4 +1,5 @@
 import { api } from "../api/APIService.js";
+import { AudioManager } from "../audio/AudioManager.js";
 import { openChallenge } from "./ChallengeUI.js";
 import { state } from "../state/GameState.js";
 import { getLevel } from "../config.js";
@@ -75,6 +76,7 @@ export async function pending(b, fn) {
   }
 }
 export async function dialogue(npc) {
+  AudioManager.chime();
   if (!state.isMissionUnlocked(npc.mission)) {
     const level = getLevel(npc.mission) + 1;
     showModal(`Level ${level} is locked`, "TRAINING SEQUENCE");

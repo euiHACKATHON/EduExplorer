@@ -1,10 +1,12 @@
 import Phaser from "phaser";
+import { AudioManager } from "../audio/AudioManager.js";
 import { WIDTH, HEIGHT } from "../config.js";
 export class BootScene extends Phaser.Scene {
   constructor() {
     super("BootScene");
   }
   create() {
+    AudioManager.init(this);
     for (const [key, color] of [
       ["amber", 0xefbe77],
       ["teal", 0x87c5bd],

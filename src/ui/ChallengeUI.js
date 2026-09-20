@@ -1,4 +1,5 @@
 import { api } from "../api/APIService.js";
+import { AudioManager } from "../audio/AudioManager.js";
 import { state } from "../state/GameState.js";
 import {
   showModal,
@@ -147,6 +148,7 @@ export async function openChallenge(id, options = {}) {
       `${o.id}   ${o.text}`,
       () => {
         selected = o.id;
+        AudioManager.select();
         choices.querySelectorAll("button").forEach((x) => {
           x.classList.remove("selected");
           x.setAttribute("aria-pressed", "false");
@@ -158,6 +160,7 @@ export async function openChallenge(id, options = {}) {
       "choice",
     );
     b.setAttribute("aria-pressed", "false");
+    b.dataset.sound = "custom";
     choices.append(b);
   });
   const hintButton = button(
@@ -170,6 +173,7 @@ export async function openChallenge(id, options = {}) {
         };
         if (!isCurrentModal(token)) return;
         hints++;
+        AudioManager.hint();
         hintBox.hidden = false;
         hintBox.textContent = `${data.source === "ai" ? "AI tutor" : data.source === "authored-fallback" ? "AI unavailable · field guide" : "Field guide"} · ${data.hint}`;
         hintButton.textContent =
@@ -190,6 +194,8 @@ export async function openChallenge(id, options = {}) {
       };
       // The server may accept a submission even if the learner closes its dialog.
       if (!isCurrentModal(token)) return;
+      if (correct) AudioManager.correct();
+      else AudioManager.incorrect();
       const chapter = state.answerChapterQuestion(
         id,
         q.question_id,
@@ -204,6 +210,10 @@ export async function openChallenge(id, options = {}) {
       else if (!result.correct)
         state.recordMistake(q, selected, result.feedback);
       renderProgress();
+      if (correct && chapter.complete && !chapter.wasComplete)
+        window.dispatchEvent(
+          new CustomEvent("mission-completed", { detail: id }),
+        );
       window.dispatchEvent(new Event("mistakes-changed"));
       feedback.textContent = result.feedback;
       feedback.className = `feedback ${result.correct ? "success" : "error"}`;
@@ -243,6 +253,8 @@ export async function openChallenge(id, options = {}) {
       }
     }),
   );
+  hintButton.dataset.sound = "custom";
+  submit.dataset.sound = "custom";
   updateControls();
   modal.append(choices, hintBox, feedback, hintButton, submit);
 }
