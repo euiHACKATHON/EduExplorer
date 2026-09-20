@@ -92,7 +92,11 @@ export async function openChallenge(id, options = {}) {
       subject: "Grade 9 Physics",
       context: `Question ${completed.size + 1} of 10`,
       options: next.options.map((text, index) => ({ id: "ABCD"[index], text })),
-      hints: ["Read each science term carefully.", "Eliminate choices that use the wrong unit or definition.", "Use the chapter notes and try again."],
+      hints: [
+        "Read each science term carefully.",
+        "Eliminate choices that use the wrong unit or definition.",
+        "Use the chapter notes and try again.",
+      ],
     };
   } catch (e) {
     if (isCurrentModal(loadToken)) modal.append(paragraph(e.message, "error"));
@@ -160,7 +164,10 @@ export async function openChallenge(id, options = {}) {
     "HINT (0/3)",
     () =>
       run(async () => {
-        const data = { hint: q.hints[Math.min(hints, q.hints.length - 1)], source: "offline" };
+        const data = {
+          hint: q.hints[Math.min(hints, q.hints.length - 1)],
+          source: "offline",
+        };
         if (!isCurrentModal(token)) return;
         hints++;
         hintBox.hidden = false;
@@ -177,16 +184,25 @@ export async function openChallenge(id, options = {}) {
         correct,
         xp_earned: 0,
         mastery: 0,
-        feedback: correct ? q.explanation : "Not quite. Review the chapter idea, use a hint if needed, and try again.",
+        feedback: correct
+          ? q.explanation
+          : "Not quite. Review the chapter idea, use a hint if needed, and try again.",
       };
       // The server may accept a submission even if the learner closes its dialog.
       if (!isCurrentModal(token)) return;
-      const chapter = state.answerChapterQuestion(id, q.question_id, correct, hints);
+      const chapter = state.answerChapterQuestion(
+        id,
+        q.question_id,
+        correct,
+        hints,
+      );
       // A normal retry helps the learner progress through the chapter, but it
       // should not silently erase a missed question from the Quest Log. Only
       // a deliberate practice retry launched from that log clears the item.
-      if (result.correct && options.review) state.resolveMistakes(q.question_id);
-      else if (!result.correct) state.recordMistake(q, selected, result.feedback);
+      if (result.correct && options.review)
+        state.resolveMistakes(q.question_id);
+      else if (!result.correct)
+        state.recordMistake(q, selected, result.feedback);
       renderProgress();
       window.dispatchEvent(new Event("mistakes-changed"));
       feedback.textContent = result.feedback;
@@ -196,7 +212,9 @@ export async function openChallenge(id, options = {}) {
         if (!chapter.complete) {
           showModal("Question mastered", "CHAPTER PROGRESS");
           modal.append(
-            paragraph(`${chapter.answered} of 10 questions complete. Continue to the next question.`),
+            paragraph(
+              `${chapter.answered} of 10 questions complete. Continue to the next question.`,
+            ),
             button("Next question →", () => openChallenge(id)),
           );
         } else if (chapter.wasComplete) {
@@ -211,15 +229,17 @@ export async function openChallenge(id, options = {}) {
                 : "You've already earned XP for this quest, so no new Star XP this time — but nice review!",
               "review-success",
             ),
-            button(
-              options.review ? "Back to the journal" : "Continue",
-              () =>
-                options.review
-                  ? window.dispatchEvent(new Event("open-journal"))
-                  : closeModal(),
+            button(options.review ? "Back to the journal" : "Continue", () =>
+              options.review
+                ? window.dispatchEvent(new Event("open-journal"))
+                : closeModal(),
             ),
           );
-        } else showVictory(id, { ...result, xp_earned: Math.max(250, 500 - hints * 15) });
+        } else
+          showVictory(id, {
+            ...result,
+            xp_earned: Math.max(250, 500 - hints * 15),
+          });
       }
     }),
   );
@@ -228,5 +248,12 @@ export async function openChallenge(id, options = {}) {
 }
 
 window.addEventListener("review-question", (event) =>
-  openChallenge(event.detail.mission, { review: true, questionId: event.detail.questionId }),
+  openChallenge(event.detail.mission, {
+    review: true,
+    questionId: event.detail.questionId,
+  }),
+);
+
+window.addEventListener("open-chapter-quiz", (event) =>
+  openChallenge(event.detail),
 );

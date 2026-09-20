@@ -129,6 +129,17 @@ export async function dialogue(npc) {
       );
       modal.append(b);
     }
+    modal.append(
+      button(
+        "OPEN AI LEARNING STUDIO",
+        () => {
+          window.dispatchEvent(
+            new CustomEvent("open-chapter-explainer", { detail: npc.mission }),
+          );
+        },
+        "secondary",
+      ),
+    );
     if (!api.useMock) {
       modal.append(
         button(

@@ -59,7 +59,9 @@ export class APIService {
         if (typeof body?.detail === "string") detail = body.detail;
         else if (Array.isArray(body?.detail))
           // FastAPI validation errors (422): a list of {msg, loc, ...}.
-          detail = body.detail.map((d) => d.msg || JSON.stringify(d)).join("; ");
+          detail = body.detail
+            .map((d) => d.msg || JSON.stringify(d))
+            .join("; ");
       } catch {}
       throw new Error(
         detail ||
@@ -144,6 +146,14 @@ export class APIService {
       mission_id: missionId,
       student_id: state.data.student_id,
       message,
+    });
+  }
+  async generateExperience(missionId, format) {
+    if (this.useMock) return null;
+    return this.request(`${this.baseUrl}/ai/generate-experience`, {
+      mission_id: missionId,
+      student_id: state.data.student_id,
+      format,
     });
   }
   async getProgress() {

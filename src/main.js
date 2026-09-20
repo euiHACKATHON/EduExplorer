@@ -10,10 +10,8 @@ import { api } from "./api/APIService.js";
 import { state } from "./state/GameState.js";
 import { applyTheme } from "./ui/Theme.js";
 import { openMistakeJournal, renderJournalBadge } from "./ui/MistakeJournal.js";
-import {
-  openAITutor,
-  setAITutorAvailable,
-} from "./ui/AskAITutor.js";
+import "./ui/ChapterExplainer.js";
+import { openAITutor, setAITutorAvailable } from "./ui/AskAITutor.js";
 import {
   showModal,
   modal,
@@ -47,7 +45,8 @@ renderJournalBadge();
 document.querySelector("#journal-button").onclick = openMistakeJournal;
 document.querySelector("#ask-ai-button").onclick = () => openAITutor();
 const setConnectionUI = (live) => {
-  document.querySelector("#mode-badge").innerHTML = `<i></i> ${live ? "LIVE AI" : "OFFLINE"}`;
+  document.querySelector("#mode-badge").innerHTML =
+    `<i></i> ${live ? "LIVE AI" : "OFFLINE"}`;
   setAITutorAvailable(live);
 };
 // Switching between offline/live profiles can leave the on-screen world

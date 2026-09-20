@@ -9,9 +9,9 @@ from fastapi import APIRouter, HTTPException, Request
 
 from ..config import MISSION_NPCS
 from ..deps import ai_rate_limit_key
-from ..schemas import AskTutor, Hint, Mission, ScenarioRequest
+from ..schemas import AskTutor, Hint, LearningExperienceRequest, Mission, ScenarioRequest
 from ..database import connect
-from ..services import adaptive, ai_agents, curriculum, rate_limit
+from ..services import adaptive, ai_agents, curriculum, learning_experiences, rate_limit
 router = APIRouter(prefix='/ai', tags=['ai'])
 
 
@@ -83,4 +83,14 @@ async def generate_scenario(payload: ScenarioRequest, request: Request):
     npc_id = payload.npc_id or MISSION_NPCS[payload.mission_id]
     return await ai_agents.generate_scenario(
         payload.mission_id, payload.student_id, npc_id, payload.difficulty, raw_challenge,
+    )
+
+
+@router.post('/generate-experience')
+async def generate_experience(payload: LearningExperienceRequest, request: Request):
+    rate_limit.check(ai_rate_limit_key(payload.student_id, request))
+    raw_challenge = curriculum.challenge(payload.mission_id)
+    context = curriculum.context_for(payload.mission_id, raw_challenge.get('lesson'))
+    return await learning_experiences.generate(
+        payload.mission_id, payload.format, raw_challenge, context
     )

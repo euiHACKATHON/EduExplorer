@@ -51,6 +51,11 @@ class ScenarioRequest(Mission):
     difficulty: int = Field(default=2, ge=1, le=3)
 
 
+class LearningExperienceRequest(Mission):
+    student_id: str = Field(default='anonymous', max_length=100)
+    format: Literal['animated', 'mini_game', 'simulation']
+
+
 class Assessment(Mission):
     student_id: str = Field(min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9_-]+$')
     question_id: str = Field(max_length=20)
