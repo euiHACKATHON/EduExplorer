@@ -1,7 +1,7 @@
 import { getLevel, levels } from "../config.js";
 
 const key = "mars-colony-v1";
-const blank = () => ({ xp: 0, completed: [], mastery: {}, mistakes: [] });
+const blank = () => ({ xp: 0, completed: [], mastery: {}, mistakes: [], chapterProgress: {} });
 export class GameState {
   constructor(storage = globalThis.localStorage) {
     this.storage = storage;
@@ -27,6 +27,7 @@ export class GameState {
       this.data.mastery = {};
     if (!Array.isArray(this.data.mistakes)) this.data.mistakes = [];
     if (!Number.isFinite(this.data.xp)) this.data.xp = 0;
+    if (!this.data.chapterProgress || typeof this.data.chapterProgress !== "object") this.data.chapterProgress = {};
   }
   snapshot() {
     return {
@@ -34,6 +35,7 @@ export class GameState {
       completed: [...(this.data.completed || [])],
       mastery: { ...this.data.mastery },
       mistakes: [...(this.data.mistakes || [])],
+      chapterProgress: { ...(this.data.chapterProgress || {}) },
     };
   }
   save() {
@@ -72,17 +74,29 @@ export class GameState {
     this.save();
     return result.correct;
   }
+  answerChapterQuestion(chapter, questionId, correct, hints = 0) {
+    const progress = new Set(this.data.chapterProgress[chapter] || []);
+    if (correct) progress.add(questionId);
+    this.data.chapterProgress[chapter] = [...progress];
+    const complete = progress.size >= 10;
+    const wasComplete = this.data.completed.includes(chapter);
+    if (complete && !wasComplete) {
+      this.data.completed.push(chapter);
+      this.data.xp += Math.max(250, 500 - hints * 15);
+    }
+    this.data.mastery[chapter] = Math.round((progress.size / 10) * 100) / 100;
+    this.save();
+    return { complete, wasComplete, answered: progress.size };
+  }
   recordMistake(question, selected, feedback = "") {
     const option = question.options.find((item) => item.id === selected);
     const existing = this.data.mistakes.find(
-      (item) =>
-        item.questionId === question.question_id && item.answerId === selected,
+      (item) => item.questionId === question.question_id && !item.resolved,
     );
     if (existing) {
       existing.attempts += 1;
       existing.lastTried = Date.now();
       existing.feedback = feedback || existing.feedback;
-      existing.resolved = false;
     } else {
       this.data.mistakes.unshift({
         mission: question.mission_id,

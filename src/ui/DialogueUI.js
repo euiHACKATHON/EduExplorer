@@ -107,9 +107,12 @@ export async function dialogue(npc) {
         () =>
           pending(b, async () => {
             if (option.action === "START_CHALLENGE")
-              await openChallenge(option.payload);
+              await openChallenge(npc.mission);
             else {
-              const info = await api.explain(npc.mission);
+              const info = {
+                message: `This chapter is part of the Grade 9 curriculum sequence. Read the question carefully, use the field-guide hints when needed, and master all 10 questions to unlock the next chapter.`,
+                source: "authored-fallback",
+              };
               if (!isCurrentModal(token)) return;
               modal.append(
                 paragraph(info.message, "hint"),

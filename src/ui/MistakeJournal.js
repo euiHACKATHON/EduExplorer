@@ -3,18 +3,21 @@ import { levels } from "../config.js";
 import { showModal, modal, paragraph, button } from "./DialogueUI.js";
 
 export function renderJournalBadge() {
-  const badge = document.querySelector("#mistake-count");
-  if (!badge) return;
-  const open = state.data.mistakes.filter((item) => !item.resolved).length;
-  badge.textContent = open;
-  badge.hidden = open === 0;
+  // Kept as a harmless compatibility hook for callers after the visual
+  // notification badge was removed from the Quest Log button.
 }
 
 export function openMistakeJournal() {
-  const mistakes = [...state.data.mistakes].sort(
-    (a, b) =>
-      Number(a.resolved) - Number(b.resolved) || b.lastTried - a.lastTried,
-  );
+  // Mastered items stay in saved history but are intentionally absent from
+  // the Quest Log: a correct practice retry clears the learner's to-do list.
+  const byQuestion = new Map();
+  state.data.mistakes
+    .filter((item) => !item.resolved)
+    .forEach((item) => {
+      const saved = byQuestion.get(item.questionId);
+      if (!saved || item.lastTried > saved.lastTried) byQuestion.set(item.questionId, item);
+    });
+  const mistakes = [...byQuestion.values()].sort((a, b) => b.lastTried - a.lastTried);
   showModal("Learning journal", "REVIEW & IMPROVE");
   modal.classList.add("journal-modal");
   modal.addEventListener(
@@ -34,9 +37,9 @@ export function openMistakeJournal() {
   }
 
   const summary = document.createElement("div");
-  const unresolved = mistakes.filter((item) => !item.resolved).length;
+  const unresolved = mistakes.length;
   summary.className = "journal-summary";
-  summary.innerHTML = `<strong>${unresolved}</strong><span>${unresolved === 1 ? "question needs" : "questions need"} another look</span><small>${mistakes.length - unresolved} mastered</small>`;
+  summary.innerHTML = `<strong>${unresolved}</strong><span>${unresolved === 1 ? "question needs" : "questions need"} another look</span><small>Correct retries leave this log</small>`;
   modal.append(summary);
 
   const list = document.createElement("div");
@@ -46,26 +49,21 @@ export function openMistakeJournal() {
       (candidate) => candidate.mission === item.mission,
     );
     const card = document.createElement("article");
-    card.className = `mistake-card${item.resolved ? " resolved" : ""}`;
-    const status = item.resolved ? "Mastered" : "Review needed";
+    card.className = "mistake-card";
     const meta = document.createElement("div");
     meta.className = "mistake-meta";
     const subject = document.createElement("span");
-    subject.textContent = `${level?.realm || "WORLD"} // ${item.subject}`;
+    subject.textContent = `CHAPTER ${level ? levels.indexOf(level) + 1 : "?"} // ${level?.title.replace(/^Chapter \d+ · /, "") || item.subject}`;
     const statusLabel = document.createElement("em");
-    statusLabel.textContent = status;
+    statusLabel.textContent = "Review needed";
     meta.append(subject, statusLabel);
     const question = document.createElement("h3");
     question.textContent = item.question;
-    const answer = document.createElement("p");
-    const answerLabel = document.createElement("small");
-    answerLabel.textContent = "Your answer";
-    answer.append(answerLabel, `${item.answerId}. ${item.answerText}`);
     const note = document.createElement("p");
     note.className = "mistake-note";
     note.textContent =
       item.feedback || "Review the lesson and try the question again.";
-    card.append(meta, question, answer, note);
+    card.append(meta, question, note);
     if (item.attempts > 1) {
       const attempts = document.createElement("span");
       attempts.className = "attempt-count";
@@ -73,12 +71,14 @@ export function openMistakeJournal() {
       card.append(attempts);
     }
     const review = button(
-      item.resolved ? "Practise again" : "Review question",
+      "Practise question",
       () =>
         window.dispatchEvent(
-          new CustomEvent("review-question", { detail: item.mission }),
+          new CustomEvent("review-question", {
+            detail: { mission: item.mission, questionId: item.questionId },
+          }),
         ),
-      item.resolved ? "secondary compact" : "primary compact",
+      "primary compact",
     );
     card.append(review);
     list.append(card);

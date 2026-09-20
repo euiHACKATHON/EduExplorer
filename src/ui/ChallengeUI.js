@@ -12,6 +12,7 @@ import {
 import { renderProgress } from "./ProgressUI.js";
 import { getLevel, levels } from "../config.js";
 import { sigilHTML } from "./PixelSigil.js";
+import { chapterQuizzes } from "../data/chapterQuizzes.js";
 
 function showVictory(mission, result) {
   const levelIndex = getLevel(mission);
@@ -73,7 +74,26 @@ export async function openChallenge(id, options = {}) {
   const loadToken = modalRevision();
   let q;
   try {
-    q = await api.getChallenge(id);
+    const questions = chapterQuizzes[id];
+    if (!questions) throw new Error("This chapter has no assessment yet.");
+    const completed = new Set(state.data.chapterProgress?.[id] || []);
+    const next = options.questionId
+      ? questions.find((item) => item.id === options.questionId)
+      : questions.find((item) => !completed.has(item.id));
+    if (!next) {
+      showVictory(id, { xp_earned: 0 });
+      return;
+    }
+    q = {
+      ...next,
+      question_id: next.id,
+      mission_id: id,
+      title: levels[getLevel(id)].title,
+      subject: "Grade 9 Physics",
+      context: `Question ${completed.size + 1} of 10`,
+      options: next.options.map((text, index) => ({ id: "ABCD"[index], text })),
+      hints: ["Read each science term carefully.", "Eliminate choices that use the wrong unit or definition.", "Use the chapter notes and try again."],
+    };
   } catch (e) {
     if (isCurrentModal(loadToken)) modal.append(paragraph(e.message, "error"));
     return;
@@ -140,12 +160,7 @@ export async function openChallenge(id, options = {}) {
     "HINT (0/3)",
     () =>
       run(async () => {
-        const data = await api.requestHint({
-          mission_id: id,
-          question_id: q.question_id,
-          student_id: state.data.student_id,
-          level: hints + 1,
-        });
+        const data = { hint: q.hints[Math.min(hints, q.hints.length - 1)], source: "offline" };
         if (!isCurrentModal(token)) return;
         hints++;
         hintBox.hidden = false;
@@ -157,33 +172,34 @@ export async function openChallenge(id, options = {}) {
   );
   const submit = button("Check answer →", () =>
     run(async () => {
-      const result = await api.submitAssessment({
-        student_id: state.data.student_id,
-        mission_id: id,
-        question_id: q.question_id,
-        answer: selected,
-        time_taken: Math.min(
-          86400,
-          Math.round((performance.now() - started) / 1000),
-        ),
-        hints_used: hints,
-      });
+      const correct = selected === q.answer;
+      const result = {
+        correct,
+        xp_earned: 0,
+        mastery: 0,
+        feedback: correct ? q.explanation : "Not quite. Review the chapter idea, use a hint if needed, and try again.",
+      };
       // The server may accept a submission even if the learner closes its dialog.
       if (!isCurrentModal(token)) return;
-      const wasCompleted = state.data.completed.includes(id);
-      state.award(id, result);
-      if (result.correct) state.resolveMistakes(q.question_id);
-      else state.recordMistake(q, selected, result.feedback);
+      const chapter = state.answerChapterQuestion(id, q.question_id, correct, hints);
+      // A normal retry helps the learner progress through the chapter, but it
+      // should not silently erase a missed question from the Quest Log. Only
+      // a deliberate practice retry launched from that log clears the item.
+      if (result.correct && options.review) state.resolveMistakes(q.question_id);
+      else if (!result.correct) state.recordMistake(q, selected, result.feedback);
       renderProgress();
       window.dispatchEvent(new Event("mistakes-changed"));
       feedback.textContent = result.feedback;
       feedback.className = `feedback ${result.correct ? "success" : "error"}`;
       if (result.correct) {
         finished = true;
-        window.dispatchEvent(
-          new CustomEvent("mission-complete", { detail: id }),
-        );
-        if (wasCompleted) {
+        if (!chapter.complete) {
+          showModal("Question mastered", "CHAPTER PROGRESS");
+          modal.append(
+            paragraph(`${chapter.answered} of 10 questions complete. Continue to the next question.`),
+            button("Next question →", () => openChallenge(id)),
+          );
+        } else if (chapter.wasComplete) {
           showModal(
             options.review ? "Mistake mastered" : "Already mastered",
             "LEARNING JOURNAL",
@@ -203,7 +219,7 @@ export async function openChallenge(id, options = {}) {
                   : closeModal(),
             ),
           );
-        } else showVictory(id, result);
+        } else showVictory(id, { ...result, xp_earned: Math.max(250, 500 - hints * 15) });
       }
     }),
   );
@@ -212,5 +228,5 @@ export async function openChallenge(id, options = {}) {
 }
 
 window.addEventListener("review-question", (event) =>
-  openChallenge(event.detail, { review: true }),
+  openChallenge(event.detail.mission, { review: true, questionId: event.detail.questionId }),
 );
