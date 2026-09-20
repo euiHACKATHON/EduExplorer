@@ -65,6 +65,18 @@ class Assessment(Mission):
     context: ContextType = 'numerical'
 
 
+class AssessmentResponse(BaseModel):
+    correct: bool
+    xp_earned: int
+    mastery: float
+    feedback: str
+    source: str = 'verified'
+    evidence_score: Optional[float] = None
+    performance_factor: Optional[float] = None
+    misconception: Optional[str] = None
+    objective_id: Optional[str] = None
+
+
 class PredictionCreate(BaseModel):
     mission_id: MissionId
     question_id: str = Field(max_length=20)

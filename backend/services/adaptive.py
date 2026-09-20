@@ -32,6 +32,7 @@ def update_mastery(
     correct: bool,
     hints_used: int,
     difficulty: int = 1,
+    assessment_result=None,
 ) -> tuple[int, float]:
     """Update mastery using a recency-weighted evidence model.
 
@@ -50,13 +51,11 @@ def update_mastery(
     old_score = previous[1] if previous else 0.0
     already_completed = bool(previous and previous[0] > 0)
 
-    # Base evidence:
-    #   correct -> 1.0
-    #   incorrect -> 0.0
-    #
-    # Hints reduce the strength of evidence because the student received
-    # assistance before producing the answer.
-    if correct:
+    # Use evidence score provided by Person 5's AssessmentResult if available,
+    # otherwise compute base evidence score.
+    if assessment_result is not None and hasattr(assessment_result, 'evidence_score'):
+        evidence = assessment_result.evidence_score
+    elif correct:
         difficulty_weight = 0.8 + (difficulty - 1) * 0.05
         evidence = min(
             1.0,
